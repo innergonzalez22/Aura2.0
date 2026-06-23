@@ -399,6 +399,23 @@ async function cargarMetodosPago() {
     } catch(e){ console.error('Error cargando métodos de pago:',e); }
 }
 
+async function cargarClientes() {
+    try {
+        const r = await fetch('/api/clientes');
+        const res = await r.json();
+        const list = Array.isArray(res) ? res : res.data || [];
+        const sel = document.getElementById('IDCliente');
+        list.forEach(c => {
+            if (c.Estado === 1) {
+                const opt = document.createElement('option');
+                opt.value = c.IDCliente;
+                opt.textContent = `${c.Nombre} ${c.Apellido} - Doc: ${c.NroDocumento}`;
+                sel.appendChild(opt);
+            }
+        });
+    } catch(e) { console.error('Error cargando clientes:', e); }
+}
+
 /* ──────────────────────────────────────────────────
    DISPONIBILIDAD / FECHAS
 ────────────────────────────────────────────────── */
@@ -624,6 +641,45 @@ function toggleServicioDetails(servicioId,isActive) {
 }
 
 /* ──────────────────────────────────────────────────
+   LÍMITE DE PERSONAS
+────────────────────────────────────────────────── */
+function actualizarLimitePersonas() {
+    const personasInput = document.getElementById('NumeroPersonas');
+    const limiteEl = document.getElementById('personas-limite-msg');
+    if (!personasInput) return;
+
+    const hVal = document.getElementById('IDHabitacion').value;
+    const cVal = document.getElementById('IDCabana').value;
+    const pVal = document.getElementById('IDPaquete').value;
+
+    let capacidad = null;
+    let nombre = '';
+
+    if (hVal) {
+        const h = habitacionesData.find(h => String(h.IDHabitacion) === String(hVal));
+        if (h && h.CapacidadPersonas) { capacidad = Number(h.CapacidadPersonas); nombre = h.NombreHabitacion || 'la habitación'; }
+    } else if (cVal) {
+        const c = cabanasData.find(c => String(c.IDCabana) === String(cVal));
+        if (c && c.CapacidadPersonas) { capacidad = Number(c.CapacidadPersonas); nombre = c.NombreCabana || 'la cabaña'; }
+    } else if (pVal) {
+        const p = paquetesData.find(p => String(p.IDPaquete) === String(pVal));
+        if (p && p.NumeroPersonas) { capacidad = Number(p.NumeroPersonas); nombre = p.NombrePaquete || p.nombre || 'el paquete'; }
+    }
+
+    if (capacidad !== null) {
+        personasInput.max = capacidad;
+        if (Number(personasInput.value) > capacidad) personasInput.value = capacidad;
+        if (limiteEl) {
+            limiteEl.textContent = `Capacidad máxima de ${nombre}: ${capacidad} persona(s)`;
+            limiteEl.style.display = 'block';
+        }
+    } else {
+        personasInput.removeAttribute('max');
+        if (limiteEl) limiteEl.style.display = 'none';
+    }
+}
+
+/* ──────────────────────────────────────────────────
    EVENTOS
 ────────────────────────────────────────────────── */
 const habitacionInput        = document.getElementById('IDHabitacion');
@@ -637,17 +693,20 @@ habitacionInput.addEventListener('change', async(e)=>{
     mostrarPreviewItem('habitacion',e.target.value);
     populatePaquetes(e.target.value);
     calcularTotal(); updateAvailabilityMessage(); validateDateSelection(); updateSelectStates();
+    actualizarLimitePersonas();
     await updateDatePickerRestrictions();
 });
 cabanaInput.addEventListener('change', async(e)=>{
     mostrarPreviewItem('cabana',e.target.value);
     calcularTotal(); updateSelectStates();
+    actualizarLimitePersonas();
     await updateDatePickerRestrictions();
 });
 paqueteInput.addEventListener('change', async(e)=>{
     if (e.target.value!=='') { habitacionInput.value=''; mostrarDetalleHabitacion(''); cabanaInput.value=''; mostrarDetalleCabana(''); }
     mostrarDetallePaquete(e.target.value);
     calcularTotal(); updateAvailabilityMessage(); validateDateSelection(); updateSelectStates();
+    actualizarLimitePersonas();
     await updateDatePickerRestrictions();
 });
 fechaInicioInput.addEventListener('change',()=>{
@@ -705,7 +764,17 @@ document.getElementById('reservationForm').addEventListener('submit', async(e)=>
     const cabanaVal     = document.getElementById('IDCabana').value;
     const paqueteVal    = document.getElementById('IDPaquete').value;
     const metodoPagoVal = document.getElementById('MetodoPago').value;
+    const clienteVal    = document.getElementById('IDCliente').value;
+    const personasVal   = document.getElementById('NumeroPersonas').value;
 
+    if (!clienteVal) {
+        mostrarNotificacion('Debes seleccionar un cliente.','warning');
+        return;
+    }
+    if (!personasVal || parseInt(personasVal) < 1) {
+        mostrarNotificacion('La cantidad de personas debe ser al menos 1.','warning');
+        return;
+    }
     if (!habitacionVal && !cabanaVal && !paqueteVal) {
         mostrarNotificacion('Debes seleccionar un alojamiento (habitación, cabaña o paquete).','warning');
         return;
@@ -728,7 +797,9 @@ document.getElementById('reservationForm').addEventListener('submit', async(e)=>
         FechaInicio:        document.getElementById('FechaInicio').value,
         FechaFinalizacion:  document.getElementById('FechaFinalizacion').value,
         MetodoPago:         metodoPagoVal ? parseInt(metodoPagoVal) : null,
-        UsuarioIdusuario:   user.IDUsuario
+        UsuarioIdusuario:   user.IDUsuario,
+        IDCliente:          parseInt(clienteVal),
+        NumeroPersonas:     parseInt(personasVal)
     };
 
     const submitBtn = document.querySelector('.nr-btn-confirmar');
@@ -763,7 +834,8 @@ document.getElementById('reservationForm').addEventListener('submit', async(e)=>
         cargarCabanas(),
         cargarPaquetes(),
         cargarServicios(),
-        cargarMetodosPago()
+        cargarMetodosPago(),
+        cargarClientes()
     ]);
 
     updateDateLimits();

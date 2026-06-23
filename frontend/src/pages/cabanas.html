@@ -46,11 +46,19 @@
         <input type="hidden" id="cabana-id">
         
         <div class="form-grid premium-grid" style="gap: 0.8rem;">
-          <div class="form-group premium-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+          <div class="form-group premium-group" style="margin-bottom: 0;">
             <label for="nombreCabana" style="color: #fff; font-size: 0.8rem; margin-bottom: 0.3rem;">🏕️ Nombre de la Cabaña <span class="campo-requerido">*</span></label>
             <div class="input-icon-wrapper">
               <i data-lucide="home" class="input-icon" style="width: 16px; height: 16px;"></i>
               <input type="text" id="nombreCabana" placeholder="Nombre de la cabaña" required style="padding: 0.6rem 1rem 0.6rem 2.5rem; font-size: 0.85rem;">
+            </div>
+          </div>
+          
+          <div class="form-group premium-group" style="margin-bottom: 0;">
+            <label for="descripcionCabana" style="color: #fff; font-size: 0.8rem; margin-bottom: 0.3rem;">📝 Descripción</label>
+            <div class="input-icon-wrapper">
+              <i data-lucide="align-left" class="input-icon" style="width: 16px; height: 16px;"></i>
+              <textarea id="descripcionCabana" rows="2" placeholder="Descripción de la cabaña" style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 14px; color: #fff; font-size: 0.85rem; height: 38px; min-height: 38px; resize: vertical;"></textarea>
             </div>
           </div>
           
@@ -67,14 +75,6 @@
             <div class="input-icon-wrapper">
               <i data-lucide="dollar-sign" class="input-icon" style="width: 16px; height: 16px;"></i>
               <input type="number" id="precioNoche" placeholder="Precio por noche" step="0.01" required style="padding: 0.6rem 1rem 0.6rem 2.5rem; font-size: 0.85rem;">
-            </div>
-          </div>
-
-          <div class="form-group premium-group" style="grid-column: 1 / -1; margin-bottom: 0;">
-            <label for="descripcionCabana" style="color: #fff; font-size: 0.8rem; margin-bottom: 0.3rem;">📝 Descripción</label>
-            <div class="input-icon-wrapper">
-              <i data-lucide="align-left" class="input-icon" style="width: 16px; height: 16px; top: 0.7rem;"></i>
-              <textarea id="descripcionCabana" rows="2" placeholder="Descripción de la cabaña" style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 14px; color: #fff; font-size: 0.85rem; resize: none;"></textarea>
             </div>
           </div>
           

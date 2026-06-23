@@ -2383,13 +2383,15 @@ function renderForm(section, data = null, extra = {}) {
     switch(section) {
         case 'habitaciones':
             fields = `
-                <div class="form-group">
-                    <label>🏨 NOMBRE HABITACIÓN</label>
-                    <input type="text" name="NombreHabitacion" value="${data?.NombreHabitacion || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label>📝 DESCRIPCIÓN</label>
-                    <textarea name="Descripcion">${data?.Descripcion || ''}</textarea>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🏨 NOMBRE HABITACIÓN</label>
+                        <input type="text" name="NombreHabitacion" value="${data?.NombreHabitacion || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📝 DESCRIPCIÓN</label>
+                        <textarea name="Descripcion" style="min-height: 42px; height: 42px; resize: vertical;">${data?.Descripcion || ''}</textarea>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -2407,9 +2409,15 @@ function renderForm(section, data = null, extra = {}) {
                 <div class="form-group" style="text-align: center; margin-bottom: 1rem;">
                     <img id="preview-img-modal" src="${data?.imagen || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80'}" alt="Preview" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(49,130,206,0.15); box-shadow: 0 4px 15px rgba(26,43,74,0.1);">
                 </div>
-                <div class="form-group">
-                    <label>🖼️ IMAGEN URL</label>
-                    <input type="text" name="imagen" value="${data?.imagen || ''}" oninput="document.getElementById('preview-img-modal').src = this.value || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80'">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 3fr; gap: 15px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label>👥 LÍMITE PERSONAS</label>
+                        <input type="number" name="CapacidadPersonas" value="${data?.CapacidadPersonas || 1}" min="1" required>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>🖼️ IMAGEN URL</label>
+                        <input type="text" name="imagen" value="${data?.imagen || ''}" oninput="document.getElementById('preview-img-modal').src = this.value || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80'">
+                    </div>
                 </div>`;
             break;
         case 'clientes':
@@ -2451,22 +2459,19 @@ function renderForm(section, data = null, extra = {}) {
             break;
         case 'cabanas':
             fields = `
-                <div class="form-group">
-                    <label>🏠 NOMBRE DE LA CABAÑA</label>
-                    <input type="text" name="NombreCabana" value="${data?.NombreCabana || ''}" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+" title="Solo debe contener letras y espacios." required>
-                    <span class="field-error" id="err-NombreCabana"></span>
-                </div>
-                <div class="form-group">
-                    <label>📝 DESCRIPCIÓN</label>
-                    <textarea name="Descripcion" title="Solo debe contener letras y espacios.">${data?.Descripcion || ''}</textarea>
-                    <span class="field-error" id="err-Descripcion"></span>
-                </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>👥 CAP. PERSONAS</label>
-                        <input type="text" name="CapacidadPersonas" value="${data?.CapacidadPersonas || ''}" pattern="\\d+" title="Solo debe contener números." required>
-                        <span class="field-error" id="err-CapacidadPersonas"></span>
+                        <label>🏠 NOMBRE DE LA CABAÑA</label>
+                        <input type="text" name="NombreCabana" value="${data?.NombreCabana || ''}" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+" title="Solo debe contener letras y espacios." required>
+                        <span class="field-error" id="err-NombreCabana"></span>
                     </div>
+                    <div class="form-group">
+                        <label>📝 DESCRIPCIÓN</label>
+                        <textarea name="Descripcion" title="Solo debe contener letras y espacios." style="min-height: 42px; height: 42px; resize: vertical;">${data?.Descripcion || ''}</textarea>
+                        <span class="field-error" id="err-Descripcion"></span>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
                         <label>🚪 NRO HABITACIONES</label>
                         <input type="text" name="NumeroHabitaciones" value="${data?.NumeroHabitaciones || ''}" pattern="\\d+" title="Solo debe contener números." required>
@@ -2481,9 +2486,16 @@ function renderForm(section, data = null, extra = {}) {
                 <div class="form-group" style="text-align: center; margin-bottom: 1rem;">
                     <img id="preview-img-modal" src="${data?.ImagenCabana || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=900&q=80'}" alt="Preview" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(49,130,206,0.15); box-shadow: 0 4px 15px rgba(26,43,74,0.1);">
                 </div>
-                <div class="form-group">
-                    <label>🖼️ IMAGEN URL</label>
-                    <input type="text" name="ImagenCabana" value="${data?.ImagenCabana || ''}" oninput="document.getElementById('preview-img-modal').src = this.value || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=900&q=80'">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 3fr; gap: 15px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label>👥 CAP. PERSONAS</label>
+                        <input type="text" name="CapacidadPersonas" value="${data?.CapacidadPersonas || ''}" pattern="\\d+" title="Solo debe contener números." required>
+                        <span class="field-error" id="err-CapacidadPersonas"></span>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>🖼️ IMAGEN URL</label>
+                        <input type="text" name="ImagenCabana" value="${data?.ImagenCabana || ''}" oninput="document.getElementById('preview-img-modal').src = this.value || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=900&q=80'">
+                    </div>
                 </div>
                 ${isEdit ? '<input type="hidden" name="Estado" value="' + (data?.Estado ?? 1) + '">' : ''}`;
             break;
@@ -2590,12 +2602,16 @@ function renderForm(section, data = null, extra = {}) {
                         <input type="number" name="precio" id="input-precio-final" value="${data?.precio || data?.Precio || 0}" required readonly style="background-color: #f0f7ff; color: #10b981; font-weight: bold;">
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 15px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label>👥 LÍMITE PERSONAS</label>
+                        <input type="number" name="CapacidadPersonas" value="${data?.CapacidadPersonas || data?.NumeroPersonas || 1}" min="1" required>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
                         <label>🖼️ IMAGEN URL</label>
                         <input type="text" name="imagen" value="${data?.imagen || ''}" oninput="document.getElementById('preview-img-modal').src = this.value || 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=900&q=80'">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin: 0;">
                         <label>⚙️ ESTADO</label>
                         <select name="Estado">
                             <option value="1" ${data?.Estado === 1 ? 'selected' : ''}>Activo</option>
@@ -2609,13 +2625,15 @@ function renderForm(section, data = null, extra = {}) {
             break;
         case 'servicios':
             fields = `
-                <div class="form-group">
-                    <label>🛠️ NOMBRE SERVICIO</label>
-                    <input type="text" name="NombreServicio" value="${data?.NombreServicio || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label>📝 DESCRIPCIÓN</label>
-                    <textarea name="Descripcion">${data?.Descripcion || ''}</textarea>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🛠️ NOMBRE SERVICIO</label>
+                        <input type="text" name="NombreServicio" value="${data?.NombreServicio || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📝 DESCRIPCIÓN</label>
+                        <textarea name="Descripcion" style="min-height: 42px; height: 42px; resize: vertical;">${data?.Descripcion || ''}</textarea>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

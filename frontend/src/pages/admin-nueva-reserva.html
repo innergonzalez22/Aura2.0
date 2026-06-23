@@ -251,8 +251,26 @@
             <!-- COLUMNA IZQUIERDA: formulario -->
             <form id="reservationForm" class="nr-form">
 
+              <!-- PASO 0: DATOS DE LA RESERVA -->
+              <div class="nr-card nr-card--step0">
+                <div class="nr-card__titulo">Datos de la Reserva</div>
+                <div class="nr-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                  <div class="nr-field">
+                    <label class="nr-label" for="IDCliente">👤 Cliente</label>
+                    <select id="IDCliente" required>
+                      <option value="">Seleccione un cliente...</option>
+                    </select>
+                  </div>
+                  <div class="nr-field">
+                    <label class="nr-label" for="NumeroPersonas">👥 Cantidad de Personas</label>
+                    <input type="number" id="NumeroPersonas" min="1" value="1" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid rgba(49,130,206,0.3); border-radius: 8px; font-family: var(--fuente-secundaria); font-size: 0.95rem;" required>
+                    <small id="personas-limite-msg" style="display:none; color:#f59e0b; font-size:0.78rem; margin-top:0.25rem; display:none;"></small>
+                  </div>
+                </div>
+              </div>
+
               <!-- PASO 1: FECHAS -->
-              <div class="nr-card nr-card--step1">
+              <div class="nr-card nr-card--step1" style="margin-top: 1.5rem;">
                 <div class="nr-card__titulo">Selecciona tus Fechas</div>
 
                 <div id="contadorNoches" class="nr-noches-badge" style="display:none;">

@@ -59,6 +59,17 @@ const updateEstadoCabana = async (id, estado) => {
 
 // Eliminar cabaña
 const remove = async (id) => {
+    const [check] = await pool.query(
+        `SELECT COUNT(*) AS total 
+         FROM detallereservacabana drc
+         JOIN reserva r ON drc.IDReserva = r.IdReserva
+         WHERE drc.IDCabana = ? AND r.IdEstadoReserva != 3`, [id]
+    );
+    if (check[0].total > 0) {
+        const err = new Error('No se puede eliminar la cabaña porque está asociada a reservas existentes. Cambia su estado a inactivo.');
+        err.statusCode = 409;
+        throw err;
+    }
     await pool.query(
         'DELETE FROM cabanas WHERE IDCabana=?',
         [id]

@@ -40,7 +40,7 @@ const create = async (data) => {
     const TipoDescuento = data.TipoDescuento || 'porcentaje';
     const Estado = data.Estado !== undefined ? Number(data.Estado) : 1;
     const imagen = data.imagen || '';
-    const NumeroPersonas = data.NumeroPersonas ? Number(data.NumeroPersonas) : null;
+    const NumeroPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : (data.NumeroPersonas ? Number(data.NumeroPersonas) : null);
 
     const [result] = await db.query(
         `INSERT INTO paquetes (nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, precio, Descuento, TipoDescuento, Estado, imagen, NumeroPersonas)
@@ -62,7 +62,7 @@ const update = async (id, data) => {
     const TipoDescuento = data.TipoDescuento || 'porcentaje';
     const Estado = data.Estado !== undefined ? Number(data.Estado) : 1;
     const imagen = data.imagen || '';
-    const NumeroPersonas = data.NumeroPersonas ? Number(data.NumeroPersonas) : null;
+    const NumeroPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : (data.NumeroPersonas ? Number(data.NumeroPersonas) : null);
 
     await db.query(
         `UPDATE paquetes
@@ -75,7 +75,10 @@ const update = async (id, data) => {
 
 const remove = async (id) => {
     const [check] = await db.query(
-        'SELECT COUNT(*) AS total FROM detallereservapaquetes WHERE IDPaquete = ?', [id]
+        `SELECT COUNT(*) AS total 
+         FROM detallereservapaquetes drp
+         JOIN reserva r ON drp.IDReserva = r.IdReserva
+         WHERE drp.IDPaquete = ? AND r.IdEstadoReserva != 3`, [id]
     );
     if (check[0].total > 0) {
         const err = new Error('No se puede eliminar el paquete porque está asociado a reservas existentes. Cambia su estado a inactivo.');

@@ -49,10 +49,13 @@ const actualizarServicio = async (id, servicio) => {
 
 const eliminarServicio = async (id) => {
     const [check] = await db.query(
-        'SELECT COUNT(*) AS total FROM detallereservaservicio WHERE IDServicio = ?', [id]
+        `SELECT COUNT(*) AS total 
+         FROM detallereservaservicio drs
+         JOIN reserva r ON drs.IDReserva = r.IdReserva
+         WHERE drs.IDServicio = ? AND r.IdEstadoReserva != 3`, [id]
     );
     if (check[0].total > 0) {
-        const err = new Error('No se puede eliminar el servicio porque está asociado a reservas existentes. Cambia su estado a inactivo.');
+        const err = new Error('No se puede eliminar el servicio porque está asociada a reservas existentes. Cambia su estado a inactivo.');
         err.statusCode = 409;
         throw err;
     }

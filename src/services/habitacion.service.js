@@ -16,9 +16,10 @@ const create = async (data) => {
     const descripcion = data.descripcion || data.Descripcion || '';
     const imagen = data.imagen || '';
     const Estado = data.Estado !== undefined ? Number(data.Estado) : 1;
+    const CapacidadPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : 1;
     const [result] = await db.query(
-        "INSERT INTO habitacion (NombreHabitacion, precio, Descripcion, imagen, Estado) VALUES (?, ?, ?, ?, ?)",
-        [nombre, precio, descripcion, imagen, Estado]
+        "INSERT INTO habitacion (NombreHabitacion, precio, Descripcion, imagen, Estado, CapacidadPersonas) VALUES (?, ?, ?, ?, ?, ?)",
+        [nombre, precio, descripcion, imagen, Estado, CapacidadPersonas]
     );
     return result;
 };
@@ -29,16 +30,20 @@ const update = async (id, data) => {
     const descripcion = data.descripcion || data.Descripcion || '';
     const imagen = data.imagen || '';
     const Estado = data.Estado !== undefined ? Number(data.Estado) : 1;
+    const CapacidadPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : 1;
     const [result] = await db.query(
-        "UPDATE habitacion SET NombreHabitacion=?, precio=?, Descripcion=?, imagen=?, Estado=? WHERE IDHabitacion=?",
-        [nombre, precio, descripcion, imagen, Estado, id]
+        "UPDATE habitacion SET NombreHabitacion=?, precio=?, Descripcion=?, imagen=?, Estado=?, CapacidadPersonas=? WHERE IDHabitacion=?",
+        [nombre, precio, descripcion, imagen, Estado, CapacidadPersonas, id]
     );
     return result;
 };
 
 const remove = async (id) => {
     const [check] = await db.query(
-        'SELECT COUNT(*) AS total FROM detallereservahabitacion WHERE IDHabitacion = ?', [id]
+        `SELECT COUNT(*) AS total 
+         FROM detallereservahabitacion drh
+         JOIN reserva r ON drh.IDReserva = r.IdReserva
+         WHERE drh.IDHabitacion = ? AND r.IdEstadoReserva != 3`, [id]
     );
     if (check[0].total > 0) {
         const err = new Error('No se puede eliminar la habitación porque está asociada a reservas existentes. Cambia su estado a inactivo.');

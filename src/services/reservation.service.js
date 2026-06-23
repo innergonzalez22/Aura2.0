@@ -351,6 +351,17 @@ const createReservation = async (data) => {
     const servicioIds = Array.isArray(data.serviciosAdicionales) ? data.serviciosAdicionales : [];
     const totals = await calculateTotals(data.IDPaquete, data.IDHabitacion, data.IDCabana, servicioIds, data.FechaInicio, data.FechaFinalizacion);
 
+    // ── VALIDACIÓN DE ESTADO DEL USUARIO ──────────────────────────
+    if (data.UsuarioIdusuario) {
+      const user = await usuariosService.getById(data.UsuarioIdusuario);
+      if (user && Number(user.Estado) === 0) {
+        const err = new Error('No puedes crear reservas porque tu usuario está inactivo.');
+        err.statusCode = 403;
+        throw err;
+      }
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     // ── VALIDACIÓN DE TRASLAPE DE FECHAS (backend) ──────────────────────────
     // Se verifica antes de insertar para evitar doble reserva.
     // Los errores se lanzan con statusCode 409 para que el controller
@@ -389,6 +400,54 @@ const createReservation = async (data) => {
     }
     // ────────────────────────────────────────────────────────────────────────
 
+    // ── VALIDACIÓN DE CAPACIDAD DE PERSONAS ──────────────────────────────────
+    if (data.NumeroPersonas && Number(data.NumeroPersonas) > 0) {
+      const personas = Number(data.NumeroPersonas);
+
+      if (data.IDHabitacion) {
+        const [[hab]] = await db.query(
+          'SELECT CapacidadPersonas FROM habitacion WHERE IDHabitacion = ?',
+          [data.IDHabitacion]
+        );
+        if (hab && hab.CapacidadPersonas && personas > Number(hab.CapacidadPersonas)) {
+          const err = new Error(
+            `La habitación seleccionada tiene capacidad máxima para ${hab.CapacidadPersonas} persona(s). No puedes registrar ${personas}.`
+          );
+          err.statusCode = 400;
+          throw err;
+        }
+      }
+
+      if (data.IDCabana) {
+        const [[cab]] = await db.query(
+          'SELECT CapacidadPersonas FROM cabanas WHERE IDCabana = ?',
+          [data.IDCabana]
+        );
+        if (cab && cab.CapacidadPersonas && personas > Number(cab.CapacidadPersonas)) {
+          const err = new Error(
+            `La cabaña seleccionada tiene capacidad máxima para ${cab.CapacidadPersonas} persona(s). No puedes registrar ${personas}.`
+          );
+          err.statusCode = 400;
+          throw err;
+        }
+      }
+
+      if (data.IDPaquete) {
+        const [[paq]] = await db.query(
+          'SELECT NumeroPersonas AS CapacidadPersonas FROM paquetes WHERE IDPaquete = ?',
+          [data.IDPaquete]
+        );
+        if (paq && paq.CapacidadPersonas && personas > Number(paq.CapacidadPersonas)) {
+          const err = new Error(
+            `El paquete seleccionado tiene capacidad máxima para ${paq.CapacidadPersonas} persona(s). No puedes registrar ${personas}.`
+          );
+          err.statusCode = 400;
+          throw err;
+        }
+      }
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     // reservaData NO incluye IDPaquete ni IDHabitacion — se guardan en tablas de detalle
     const reservaData = {
       FechaReserva: data.FechaReserva || new Date(),
@@ -400,7 +459,9 @@ const createReservation = async (data) => {
       MontoTotal: totals.total,
       MetodoPago: data.MetodoPago || null,
       IdEstadoReserva: data.IdEstadoReserva || 1,
-      UsuarioIdusuario: data.UsuarioIdusuario || null
+      UsuarioIdusuario: data.UsuarioIdusuario || null,
+      IDCliente: data.IDCliente || null,
+      NumeroPersonas: data.NumeroPersonas || 1
     };
 
     const [result] = await connection.query('INSERT INTO reserva SET ?', reservaData);

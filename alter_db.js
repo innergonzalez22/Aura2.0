@@ -7,7 +7,7 @@ async function run() {
         user: process.env.DB_USER || 'root',
         password: process.env.DB_PASS || '',
         database: process.env.DB_NAME || 'aura',
-        port: process.env.DB_PORT || 3307
+        port: process.env.DB_PORT || 3306
     });
 
     try {
@@ -48,6 +48,48 @@ async function run() {
         } catch (e) {
             console.log("Foreign Key already exists or error: " + e.message);
         }
+
+        console.log("Creating detallereservacabana table if it doesn't exist...");
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS detallereservacabana (
+                IDReserva INT,
+                IDCabana INT,
+                Cantidad INT DEFAULT 1,
+                Precio DECIMAL(10,2),
+                Estado INT DEFAULT 1,
+                PRIMARY KEY (IDReserva, IDCabana),
+                FOREIGN KEY (IDReserva) REFERENCES reserva(IdReserva),
+                FOREIGN KEY (IDCabana) REFERENCES cabanas(IDCabana)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `);
+
+        console.log("Creating detallereservaservicio table if it doesn't exist...");
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS detallereservaservicio (
+                IDReserva INT,
+                IDServicio INT,
+                Cantidad INT DEFAULT 1,
+                Precio DECIMAL(10,2),
+                Estado INT DEFAULT 1,
+                PRIMARY KEY (IDReserva, IDServicio),
+                FOREIGN KEY (IDReserva) REFERENCES reserva(IdReserva),
+                FOREIGN KEY (IDServicio) REFERENCES servicios(IDServicio)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `);
+
+        console.log("Creating detallereservahabitacion table if it doesn't exist...");
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS detallereservahabitacion (
+                IDReserva INT,
+                IDHabitacion INT,
+                Cantidad INT DEFAULT 1,
+                precio DECIMAL(10,2),
+                Estado INT DEFAULT 1,
+                PRIMARY KEY (IDReserva, IDHabitacion),
+                FOREIGN KEY (IDReserva) REFERENCES reserva(IdReserva),
+                FOREIGN KEY (IDHabitacion) REFERENCES habitacion(IDHabitacion)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `);
 
         console.log("Success!");
     } catch (e) {
