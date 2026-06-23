@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS paquetes (
     IDServicio VARCHAR(255),
     Descuento DECIMAL(10,2) DEFAULT 0,
     TipoDescuento VARCHAR(50) DEFAULT 'porcentaje',
-    NumeroPersonas INT DEFAULT NULL,
+    CapacidadPersonas INT DEFAULT NULL,
     FOREIGN KEY (IDHabitacion) REFERENCES habitacion(IDHabitacion),
     FOREIGN KEY (IDCabana) REFERENCES cabanas(IDCabana)
 );

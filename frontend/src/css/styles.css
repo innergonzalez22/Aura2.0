@@ -1957,8 +1957,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(rgba(26, 43, 74, 0.52), rgba(26, 43, 74, 0.72)),
-              url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1800&q=80');
+  background: linear-gradient(135deg, #1A2B4A 0%, #2B6CB0 50%, #3182CE 100%);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -2793,10 +2792,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .main-content--auth .auth-section {
-  background:
-    linear-gradient(rgba(26, 43, 74, 0.52), rgba(26, 43, 74, 0.72)),
-    url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1800&q=80')
-    center / cover no-repeat fixed;
+  background: linear-gradient(135deg, #1A2B4A 0%, #2B6CB0 50%, #3182CE 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;

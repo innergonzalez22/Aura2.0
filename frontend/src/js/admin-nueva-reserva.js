@@ -516,13 +516,69 @@ function mostrarDetalleHabitacion(id) {
     card.style.display='block';
 }
 function mostrarDetallePaquete(id) {
-    const card=document.getElementById('detallePaquete');
-    if (!id){ card.style.display='none'; return; }
-    const p=paquetesData.find(p=>p.IDPaquete==id);
+    const card = document.getElementById('detallePaquete');
+    const btn  = document.getElementById('btnVerDetallesPaquete');
+    if (!id) {
+        if (card) card.style.display = 'none';
+        if (btn)  btn.style.display  = 'none';
+        return;
+    }
+    const p = paquetesData.find(p => p.IDPaquete == id);
     if (!p) return;
-    card.innerHTML=`<h4>${p.NombrePaquete||'Paquete'}</h4><p>${p.Descripcion||''}</p><span class="precio-tag">$${Number(p.Precio||0).toLocaleString()}</span>`;
-    card.style.display='block';
+    if (card) {
+        card.innerHTML = `<h4>${p.NombrePaquete || p.nombre || 'Paquete'}</h4><p>${p.Descripcion || ''}</p><span class="precio-tag">$${Number(p.Precio || p.precio || 0).toLocaleString()}</span>`;
+        card.style.display = 'block';
+    }
+    if (btn) btn.style.display = 'inline-block';
 }
+
+/* ── MODAL DETALLES PAQUETE ── */
+function abrirModalPaquete() {
+    const pVal = document.getElementById('IDPaquete').value;
+    const p    = paquetesData.find(p => String(p.IDPaquete) === String(pVal));
+    const modal = document.getElementById('modalPaquete');
+    const content = document.getElementById('modalPaqueteContent');
+    if (!p || !modal || !content) return;
+
+    const precio = Number(p.Precio || p.precio || 0);
+    const cap    = p.NumeroPersonas || p.CapacidadPersonas || '—';
+    const desc   = p.Descripcion || p.descripcion || 'Sin descripción disponible.';
+    const nombre = p.NombrePaquete || p.nombre || 'Paquete';
+    const hab    = p.NombreHabitacion  ? `<div class="pm-row"><span class="pm-icon">🛏️</span><div><strong>Habitación incluida</strong><p>${p.NombreHabitacion}</p></div></div>` : '';
+    const cab    = p.NombreCabana      ? `<div class="pm-row"><span class="pm-icon">🏡</span><div><strong>Cabaña incluida</strong><p>${p.NombreCabana}</p></div></div>`      : '';
+    const serv   = p.NombreServicio    ? `<div class="pm-row"><span class="pm-icon">🛠️</span><div><strong>Servicios incluidos</strong><p>${p.NombreServicio}</p></div></div>` : '';
+    const desc2  = p.Descuento && Number(p.Descuento) > 0
+        ? `<div class="pm-row"><span class="pm-icon">🏷️</span><div><strong>Descuento aplicado</strong><p>${p.Descuento}%</p></div></div>` : '';
+
+    content.innerHTML = `
+        <div style="margin-bottom:1.2rem;">
+            <h2 style="margin:0 0 0.3rem; color:#1a2b4a; font-size:1.3rem;">📦 ${nombre}</h2>
+            <p style="color:#64748b; margin:0; font-size:0.9rem;">${desc}</p>
+        </div>
+        <div style="display:grid; gap:0.8rem; margin-bottom:1.2rem;">
+            ${hab}${cab}${serv}
+            <div class="pm-row"><span class="pm-icon">👥</span><div><strong>Capacidad</strong><p>Hasta ${cap} persona(s)</p></div></div>
+            ${desc2}
+        </div>
+        <div style="background:#f0f7ff; border-radius:10px; padding:1rem; display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:#64748b; font-size:0.9rem;">Precio por noche</span>
+            <strong style="font-size:1.4rem; color:#2B6CB0;">$${precio.toLocaleString('es-CO')}</strong>
+        </div>
+        <style>
+            .pm-row{display:flex;align-items:flex-start;gap:0.75rem;padding:0.6rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;}
+            .pm-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px;}
+            .pm-row strong{display:block;font-size:0.82rem;color:#1a2b4a;text-transform:uppercase;letter-spacing:0.5px;}
+            .pm-row p{margin:2px 0 0;font-size:0.93rem;color:#475569;}
+        </style>
+    `;
+    modal.style.display = 'flex';
+    modal.addEventListener('click', function(e){ if(e.target===modal) cerrarModalPaquete(); }, {once:true});
+}
+function cerrarModalPaquete() {
+    const modal = document.getElementById('modalPaquete');
+    if (modal) modal.style.display = 'none';
+}
+
 function mostrarDetalleCabana(id) {
     const card=document.getElementById('detalleCabana');
     if (!id){ card.style.display='none'; return; }
@@ -645,7 +701,8 @@ function toggleServicioDetails(servicioId,isActive) {
 ────────────────────────────────────────────────── */
 function actualizarLimitePersonas() {
     const personasInput = document.getElementById('NumeroPersonas');
-    const limiteEl = document.getElementById('personas-limite-msg');
+    const limiteEl      = document.getElementById('personas-limite-msg');
+    const warningHab    = document.getElementById('hab-capacidad-warning');
     if (!personasInput) return;
 
     const hVal = document.getElementById('IDHabitacion').value;
@@ -653,7 +710,7 @@ function actualizarLimitePersonas() {
     const pVal = document.getElementById('IDPaquete').value;
 
     let capacidad = null;
-    let nombre = '';
+    let nombre    = '';
 
     if (hVal) {
         const h = habitacionesData.find(h => String(h.IDHabitacion) === String(hVal));
@@ -668,14 +725,30 @@ function actualizarLimitePersonas() {
 
     if (capacidad !== null) {
         personasInput.max = capacidad;
-        if (Number(personasInput.value) > capacidad) personasInput.value = capacidad;
+        const actual = Number(personasInput.value);
+
+        // Mensaje informativo de límite (amarillo)
         if (limiteEl) {
-            limiteEl.textContent = `Capacidad máxima de ${nombre}: ${capacidad} persona(s)`;
-            limiteEl.style.display = 'block';
+            limiteEl.textContent  = `Capacidad máxima de ${nombre}: ${capacidad} persona(s)`;
+            limiteEl.style.display = 'inline-block';
+            limiteEl.style.color   = actual > capacidad ? '#ef4444' : '#f59e0b';
+        }
+        // Advertencia roja bajo el select de habitación
+        if (warningHab) {
+            if (actual > capacidad) {
+                warningHab.textContent  = `⚠ Excede la capacidad de ${nombre} (máx. ${capacidad}). Por favor elige otra habitación o reduce la cantidad de personas.`;
+                warningHab.style.display = 'inline-block';
+                personasInput.style.borderColor = '#ef4444';
+            } else {
+                warningHab.style.display = 'none';
+                personasInput.style.borderColor = '';
+            }
         }
     } else {
         personasInput.removeAttribute('max');
-        if (limiteEl) limiteEl.style.display = 'none';
+        personasInput.style.borderColor = '';
+        if (limiteEl)   limiteEl.style.display   = 'none';
+        if (warningHab) warningHab.style.display  = 'none';
     }
 }
 
@@ -709,6 +782,13 @@ paqueteInput.addEventListener('change', async(e)=>{
     actualizarLimitePersonas();
     await updateDatePickerRestrictions();
 });
+
+// Validar capacidad en tiempo real al escribir cantidad de personas
+const personasInputEl = document.getElementById('NumeroPersonas');
+if (personasInputEl) {
+    personasInputEl.addEventListener('input', () => actualizarLimitePersonas());
+}
+
 fechaInicioInput.addEventListener('change',()=>{
     let minDate = getTodayInputValue();
     if (fechaInicioInput.value) {

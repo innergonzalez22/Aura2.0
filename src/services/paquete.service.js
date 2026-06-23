@@ -40,12 +40,12 @@ const create = async (data) => {
     const TipoDescuento = data.TipoDescuento || 'porcentaje';
     const Estado = data.Estado !== undefined ? Number(data.Estado) : 1;
     const imagen = data.imagen || '';
-    const NumeroPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : (data.NumeroPersonas ? Number(data.NumeroPersonas) : null);
+    const CapacidadPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : (data.NumeroPersonas ? Number(data.NumeroPersonas) : null);
 
     const [result] = await db.query(
-        `INSERT INTO paquetes (nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, precio, Descuento, TipoDescuento, Estado, imagen, NumeroPersonas)
+        `INSERT INTO paquetes (nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, precio, Descuento, TipoDescuento, Estado, imagen, CapacidadPersonas)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, Precio, Descuento, TipoDescuento, Estado, imagen, NumeroPersonas]
+        [nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, Precio, Descuento, TipoDescuento, Estado, imagen, CapacidadPersonas]
     );
     return { IDPaquete: result.insertId, ...data };
 };
@@ -62,13 +62,13 @@ const update = async (id, data) => {
     const TipoDescuento = data.TipoDescuento || 'porcentaje';
     const Estado = data.Estado !== undefined ? Number(data.Estado) : 1;
     const imagen = data.imagen || '';
-    const NumeroPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : (data.NumeroPersonas ? Number(data.NumeroPersonas) : null);
+    const CapacidadPersonas = data.CapacidadPersonas ? Number(data.CapacidadPersonas) : (data.NumeroPersonas ? Number(data.NumeroPersonas) : null);
 
     await db.query(
         `UPDATE paquetes
-         SET nombre=?, Descripcion=?, IDHabitacion=?, IDCabana=?, IDServicio=?, precio=?, Descuento=?, TipoDescuento=?, Estado=?, imagen=?, NumeroPersonas=?
+         SET nombre=?, Descripcion=?, IDHabitacion=?, IDCabana=?, IDServicio=?, precio=?, Descuento=?, TipoDescuento=?, Estado=?, imagen=?, CapacidadPersonas=?
          WHERE IDPaquete=?`,
-        [nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, Precio, Descuento, TipoDescuento, Estado, imagen, NumeroPersonas, id]
+        [nombre, Descripcion, IDHabitacion, IDCabana, IDServicio, Precio, Descuento, TipoDescuento, Estado, imagen, CapacidadPersonas, id]
     );
     return getById(id);
 };

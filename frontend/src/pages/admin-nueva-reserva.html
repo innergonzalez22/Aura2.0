@@ -20,7 +20,7 @@
   </script>
   <style>
     /* ── Layout admin con sidebar ── */
-    body { margin: 0; background: #EBF4FB; }
+    body { margin: 0; background: #f0f4ff; font-family: 'Inter', 'Arial', sans-serif; }
 
     .admin-layout {
       display: flex;
@@ -43,27 +43,16 @@
       position: relative;
     }
 
-    /* Background sin imágenes para el panel admin */
+    /* Background suave para el panel admin */
     .anr-bg {
       position: fixed;
       inset: 0;
       left: var(--admin-sidebar-width, 240px);
-      background: #EBF4FB !important;
+      background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%) !important;
       z-index: 0;
       pointer-events: none;
     }
 
-    .admin-layout .main-content--premium,
-    .admin-layout .main-content--premium::before,
-    .admin-layout .main-content--premium::after {
-      background: #EBF4FB !important;
-      background-image: none !important;
-    }
-    /* Forzar cards de nr- a fondo blanco sobre fondo claro */
-    .nr-card,
-    .nr-resumen {
-      background: #ffffff !important;
-    }
 
     /* Breadcrumb / header superior del área principal */
     .anr-topbar {
@@ -213,7 +202,7 @@
     <!-- ══════════════════════════════════════════
          ÁREA PRINCIPAL
     ══════════════════════════════════════════ -->
-    <main class="anr-main main-content--premium">
+    <main class="anr-main">
 
       <!-- Fondo decorativo -->
       <div class="anr-bg"></div>
@@ -306,6 +295,7 @@
                       <option value="">Seleccione una habitación</option>
                     </select>
                     <div id="detalleHabitacion" class="nr-detalle" style="display:none;"></div>
+                    <small id="hab-capacidad-warning" style="display:none; color:#ef4444; font-size:0.78rem; margin-top:0.3rem; font-weight:600;"></small>
                   </div>
                   <div class="nr-field">
                     <label class="nr-label" for="IDCabana">🏡 Cabaña</label>
@@ -316,9 +306,10 @@
                   </div>
                   <div class="nr-field">
                     <label class="nr-label" for="IDPaquete">📦 Paquete</label>
-                    <select id="IDPaquete">
-                      <option value="">Seleccione un paquete</option>
-                    </select>
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                      <select id="IDPaquete" style="flex:1;"></select>
+                      <button type="button" id="btnVerDetallesPaquete" onclick="abrirModalPaquete()" style="display:none; white-space:nowrap; padding:0.5rem 0.85rem; background:rgba(49,130,206,0.15); border:1px solid rgba(49,130,206,0.4); border-radius:8px; color:#3182ce; font-size:0.8rem; cursor:pointer; font-weight:600;">🔍 Ver detalles</button>
+                    </div>
                     <div id="detallePaquete" class="nr-detalle" style="display:none;"></div>
                   </div>
                 </div>
@@ -397,6 +388,14 @@
 
   <!-- Notificaciones -->
   <div id="notificationContainer" class="notification-container"></div>
+
+  <!-- Modal detalles paquete -->
+  <div id="modalPaquete" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:2rem; max-width:520px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:85vh; overflow-y:auto;">
+      <button onclick="cerrarModalPaquete()" style="position:absolute; top:1rem; right:1rem; background:rgba(0,0,0,0.08); border:none; border-radius:50%; width:32px; height:32px; font-size:1.1rem; cursor:pointer; line-height:32px; text-align:center;">×</button>
+      <div id="modalPaqueteContent">Cargando...</div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="../js/api.js"></script>

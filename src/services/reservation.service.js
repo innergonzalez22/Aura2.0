@@ -434,7 +434,7 @@ const createReservation = async (data) => {
 
       if (data.IDPaquete) {
         const [[paq]] = await db.query(
-          'SELECT NumeroPersonas AS CapacidadPersonas FROM paquetes WHERE IDPaquete = ?',
+          'SELECT CapacidadPersonas FROM paquetes WHERE IDPaquete = ?',
           [data.IDPaquete]
         );
         if (paq && paq.CapacidadPersonas && personas > Number(paq.CapacidadPersonas)) {
