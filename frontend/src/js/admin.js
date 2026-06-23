@@ -550,38 +550,149 @@ window.verDetalleReserva = async (id) => {
     }
 };
 
+window.erUpdateNoches = () => {
+    const start = document.getElementById('er_fechaInicio')?.value;
+    const end = document.getElementById('er_fechaFin')?.value;
+    if (start && end) {
+        // Handle timezone issues by treating date strings as explicit UTC
+        const t1 = new Date(start + 'T00:00:00Z');
+        const t2 = new Date(end + 'T00:00:00Z');
+        const diff = Math.round((t2 - t1) / (1000 * 60 * 60 * 24));
+        if (diff > 0 && document.getElementById('er_noches')) {
+            document.getElementById('er_noches').value = diff;
+        }
+    }
+    window.erCalculateTotal();
+};
+
+window.erUpdateCheckout = () => {
+    const start = document.getElementById('er_fechaInicio')?.value;
+    const noches = parseInt(document.getElementById('er_noches')?.value) || 1;
+    if (start) {
+        const date = new Date(start + 'T00:00:00Z');
+        date.setUTCDate(date.getUTCDate() + noches);
+        if (document.getElementById('er_fechaFin')) {
+            document.getElementById('er_fechaFin').value = date.toISOString().split('T')[0];
+        }
+    }
+    window.erCalculateTotal();
+};
+
+window.erCalculateTotal = () => {
+    const noches = parseInt(document.getElementById('er_noches')?.value) || 1;
+    let subtotalServicios = 0;
+    
+    let breakdownHtml = `<div style="display:flex; justify-content:space-between; margin-bottom:0.2rem;">
+        <span>Alojamiento (${noches} noche${noches > 1 ? 's' : ''})</span>
+        <span style="font-weight:600; color:#334155;">$${(window.erBasePrice * noches).toLocaleString('es-CO')}</span>
+    </div>`;
+    
+    document.querySelectorAll('.er-servicio-checkbox:checked').forEach(chk => {
+        const idServ = chk.value;
+        const cant = Number(document.getElementById(`er_cant_${idServ}`)?.value || 1);
+        const precio = Number(chk.dataset.precio || 0);
+        const nombre = chk.dataset.nombre || 'Servicio';
+        
+        subtotalServicios += (precio * cant);
+        breakdownHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:0.2rem;">
+            <span>${nombre} (x${cant})</span>
+            <span style="font-weight:600; color:#334155;">$${(precio * cant).toLocaleString('es-CO')}</span>
+        </div>`;
+    });
+    
+    const breakdownEl = document.getElementById('er_breakdown');
+    if (breakdownEl) breakdownEl.innerHTML = breakdownHtml;
+    
+    // Total is: (Base price * Nights) + Services. The base prices in the DB ALREADY include IVA.
+    const newTotal = (window.erBasePrice * noches) + subtotalServicios;
+    
+    const diff = newTotal - window.erOriginalTotal;
+    
+    const diffEl = document.getElementById('er_diff_amount');
+    const totalEl = document.getElementById('er_new_total');
+    
+    if (totalEl) totalEl.textContent = '$' + newTotal.toLocaleString('es-CO', { maximumFractionDigits: 0 });
+    
+    if (diffEl) {
+        if (diff > 0) {
+            diffEl.innerHTML = `<span style="color:#f59e0b; font-weight:bold;">⚠️ A pagar adicional: +$${diff.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</span>`;
+        } else if (diff < 0) {
+            diffEl.innerHTML = `<span style="color:#10b981; font-weight:bold;">✅ A reembolsar: -$${Math.abs(diff).toLocaleString('es-CO', { maximumFractionDigits: 0 })}</span>`;
+        } else {
+            diffEl.innerHTML = `<span style="color:#6b7280;">Mismo precio original</span>`;
+        }
+    }
+};
 
 window.editarReserva = async (id) => {
     try {
-        const [resR, resEstados, resMetodos] = await Promise.all([
+        const [resR, resEstados, resMetodos, resServicios] = await Promise.all([
             fetch(`/api/reservas/${id}`),
             fetch('/api/estadosreserva'),
-            fetch('/api/metodopago')
+            fetch('/api/metodopago'),
+            fetch('/api/servicios')
         ]);
         if (!resR.ok) throw new Error('No se pudo cargar la reserva');
         const r = await resR.json();
         const estados = await resEstados.json();
         const metodos = await resMetodos.json();
+        const serviciosAll = await resServicios.json();
 
         const fmt = f => f ? new Date(f).toISOString().split('T')[0] : '';
+
+        // Save global values for calculation
+        window.erOriginalTotal = Number(r.MontoTotal || 0);
+        window.erBasePrice = Number(r.PrecioPaquete || r.CostoHabitacion || r.PrecioCabana || 0);
+
+        // Generate checkboxes for services
+        const serviciosHtml = serviciosAll.map(s => {
+            const currentServicio = r.servicios && r.servicios.find(rs => rs.IDServicio === s.IDServicio);
+            const isChecked = !!currentServicio;
+            const cant = currentServicio ? currentServicio.Cantidad : 1;
+            return `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:0.8rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:0.8rem; flex:1;">
+                        <input type="checkbox" id="er_chk_${s.IDServicio}" class="er-servicio-checkbox" value="${s.IDServicio}" data-precio="${s.precio || 0}" data-nombre="${s.nombre}" ${isChecked ? 'checked' : ''} onchange="document.getElementById('er_cant_${s.IDServicio}').disabled = !this.checked; window.erCalculateTotal();" style="width:18px; height:18px; cursor:pointer; margin:0;">
+                        <label for="er_chk_${s.IDServicio}" style="margin:0; padding:0; cursor:pointer; font-weight:600; color:#1A2B4A; font-size:0.95rem; line-height:1.2; display:inline-block;">
+                            ${s.nombre} <span style="color:#10b981; font-weight:700;">(+$${Number(s.precio).toLocaleString('es-CO')})</span>
+                        </label>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        <span style="font-size:0.85rem; font-weight:600; color:#6b7280;">Cant:</span>
+                        <input type="number" id="er_cant_${s.IDServicio}" class="form-input er-servicio-cant" data-id="${s.IDServicio}" value="${cant}" min="1" style="width:70px; padding:0.4rem; margin:0; text-align:center; font-weight:bold;" ${isChecked ? '' : 'disabled'} onchange="window.erCalculateTotal()">
+                    </div>
+                </div>
+            `;
+        }).join('');
 
         document.getElementById('modalTitle').textContent = `✏️ Editar Reserva #${r.IdReserva}`;
         document.getElementById('modalContent').innerHTML = `
             <form id="formEditarReserva" style="display:flex; flex-direction:column; gap:1.2rem;">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <input type="hidden" id="er_idHabitacion" value="${r.IDHabitacion || ''}">
+                <input type="hidden" id="er_idCabana" value="${r.IDCabana || ''}">
+                <input type="hidden" id="er_idPaquete" value="${r.IDPaquete || ''}">
+                <div style="display:grid; grid-template-columns:1fr 90px 1fr; gap:1rem; align-items:end;">
                     <div class="form-group">
-                        <label>Fecha Check-In</label>
-                        <input type="date" id="er_fechaInicio" value="${fmt(r.FechaInicio)}" class="form-input" required>
+                        <label>Check-In</label>
+                        <input type="date" id="er_fechaInicio" value="${fmt(r.FechaInicio)}" class="form-input" required onchange="window.erUpdateNoches()">
                     </div>
                     <div class="form-group">
-                        <label>Fecha Check-Out</label>
-                        <input type="date" id="er_fechaFin" value="${fmt(r.FechaFinalizacion)}" class="form-input" required>
+                        <label>Noches</label>
+                        <input type="number" id="er_noches" min="1" class="form-input" onchange="window.erUpdateCheckout()" style="text-align:center; font-weight:bold; font-size:1.05rem; color:#10b981; border:2px solid rgba(16,185,129,0.3); padding:0.4rem;">
+                    </div>
+                    <div class="form-group">
+                        <label>Check-Out</label>
+                        <input type="date" id="er_fechaFin" value="${fmt(r.FechaFinalizacion)}" class="form-input" required onchange="window.erUpdateNoches()">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Estado de la Reserva</label>
                     <select id="er_estado" class="form-input">
-                        ${estados.map(e => `<option value="${e.IdEstadoReserva}" ${e.IdEstadoReserva === r.IdEstadoReserva ? 'selected' : ''}>${e.NombreEstadoReserva}</option>`).join('')}
+                        ${estados.map(e => {
+                            let text = e.NombreEstadoReserva;
+                            if (text.toLowerCase() === 'pendiente') text = 'Pendiente de pago';
+                            return `<option value="${e.IdEstadoReserva}" ${e.IdEstadoReserva === r.IdEstadoReserva ? 'selected' : ''}>${text}</option>`;
+                        }).join('')}
                     </select>
                 </div>
                 <div class="form-group">
@@ -591,6 +702,30 @@ window.editarReserva = async (id) => {
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Servicios Adicionales</label>
+                    <div style="background:rgba(0,0,0,0.02); padding:1rem; border-radius:8px; border:1px solid rgba(0,0,0,0.05); max-height:150px; overflow-y:auto;">
+                        ${serviciosHtml}
+                    </div>
+                </div>
+                
+                <div style="background:#f8fafc; padding:1rem; border-radius:8px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:0.5rem;">
+                    <div id="er_breakdown" style="font-size:0.85rem; color:#64748b; margin-bottom:0.5rem; padding-bottom:0.5rem; border-bottom:1px solid #e2e8f0;">
+                        <!-- Filled dynamically by erCalculateTotal -->
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#64748b;">
+                        <span>Total Original:</span>
+                        <span>$${Number(r.MontoTotal || 0).toLocaleString('es-CO')}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:bold; color:#0f172a;">
+                        <span>Nuevo Total Estimado:</span>
+                        <span id="er_new_total">$${Number(r.MontoTotal || 0).toLocaleString('es-CO')}</span>
+                    </div>
+                    <div id="er_diff_amount" style="font-size:0.95rem; margin-top:0.2rem; text-align:right;">
+                        <span style="color:#6b7280;">Mismo precio original</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:none;">
                     <label>Monto Total ($)</label>
                     <input type="number" id="er_monto" value="${r.MontoTotal || 0}" min="0" class="form-input">
                 </div>
@@ -600,6 +735,7 @@ window.editarReserva = async (id) => {
                 </div>
             </form>`;
         document.getElementById('modalOverlay').classList.add('activo');
+        if (window.erUpdateNoches) window.erUpdateNoches();
     } catch(e) {
         console.error(e);
         mostrarNotificacion('Error al cargar datos de la reserva.', 'error');
@@ -612,6 +748,18 @@ window.guardarReserva = async (id) => {
     const idEstado    = document.getElementById('er_estado')?.value;
     const idMetodo    = document.getElementById('er_metodoPago')?.value;
     const monto       = document.getElementById('er_monto')?.value;
+
+    const idHabitacion = document.getElementById('er_idHabitacion')?.value;
+    const idCabana     = document.getElementById('er_idCabana')?.value;
+    const idPaquete    = document.getElementById('er_idPaquete')?.value;
+
+    const servicios = [];
+    document.querySelectorAll('.er-servicio-checkbox:checked').forEach(chk => {
+        const idServicio = Number(chk.value);
+        const cantInput = document.getElementById(`er_cant_${idServicio}`);
+        const cant = cantInput ? Number(cantInput.value) : 1;
+        servicios.push({ IDServicio: idServicio, Cantidad: cant });
+    });
 
     if (!fechaInicio || !fechaFin) {
         mostrarNotificacion('Las fechas de check-in y check-out son obligatorias.', 'warning');
@@ -631,7 +779,11 @@ window.guardarReserva = async (id) => {
                 FechaFinalizacion: fechaFin,
                 IdEstadoReserva:   Number(idEstado),
                 IdMetodoPago:      Number(idMetodo),
-                MontoTotal:        Number(monto)
+                MontoTotal:        Number(monto),
+                serviciosAdicionales: servicios,
+                ...(idHabitacion ? { IDHabitacion: Number(idHabitacion) } : {}),
+                ...(idCabana ? { IDCabana: Number(idCabana) } : {}),
+                ...(idPaquete ? { IDPaquete: Number(idPaquete) } : {})
             })
         });
         if (res.ok) {

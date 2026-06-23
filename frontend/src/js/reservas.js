@@ -367,8 +367,12 @@ function populateEditForm(reservation) {
     document.getElementById('editFechaInicio').value = reservation.FechaInicio ? reservation.FechaInicio.split('T')[0] : '';
     document.getElementById('editFechaFinalizacion').value = reservation.FechaFinalizacion ? reservation.FechaFinalizacion.split('T')[0] : '';
     document.getElementById('editMetodoPago').value = reservation.MetodoPago || '';
+    
+    window.clientOriginalTotal = Number(reservation.MontoTotal || 0);
+
     renderServiciosCheckboxes(reservation.servicios || []);
-    updateEditSelectStates();    calcularTotalEdicion();
+    updateEditSelectStates();
+    calcularTotalEdicion();
 }
 
 function updateEditSelectStates() {
@@ -396,40 +400,116 @@ function renderServiciosCheckboxes(selectedServices = []) {
         const div = document.createElement('div');
         div.className = 'servicio-item';
         const costoS = servicio.Costo || servicio.precio || 0;
+        
+        const currentServicio = selectedServices.find(s => s.IDServicio === servicio.IDServicio);
+        const isChecked = !!currentServicio;
+        const cant = currentServicio ? currentServicio.Cantidad : 1;
+
         div.innerHTML = `
-            <label class="servicio-label" style="padding: 1rem; gap: 0.75rem;">
-                <input type="checkbox" class="edit-servicio-check" value="${servicio.IDServicio}" data-costo="${Number(servicio.Costo || servicio.precio || 0)}" ${selectedIds.includes(servicio.IDServicio) ? 'checked' : ''} style="width: 18px; height: 18px; margin-top: 2px;">
-                <div class="servicio-main">
-                    <div class="servicio-header" style="flex-direction: column; align-items: flex-start; gap: 0.1rem;">
-                        <span class="servicio-name" style="font-size: 0.9rem; font-weight: 600;">${servicio.NombreServicio || servicio.nombre || 'Servicio'}</span>
-                        <span class="servicio-price" style="font-size: 0.8rem; color: #00d4ff;">$${Number(servicio.Costo || servicio.precio || 0).toLocaleString()}</span>
-                    </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); width: 100%;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; flex:1; margin:0;">
+                    <input type="checkbox" class="edit-servicio-check" value="${servicio.IDServicio}" data-costo="${costoS}" data-nombre="${servicio.NombreServicio || servicio.nombre || 'Servicio'}" ${isChecked ? 'checked' : ''} onchange="document.getElementById('edit_cant_${servicio.IDServicio}').disabled = !this.checked; calcularTotalEdicion();" style="width:18px; height:18px; margin:0;">
+                    <span style="font-size: 0.9rem; font-weight: 600;">${servicio.NombreServicio || servicio.nombre || 'Servicio'} <span style="color:#00d4ff;">(+$${Number(costoS).toLocaleString()})</span></span>
+                </label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span style="font-size:0.8rem; color:rgba(255,255,255,0.6);">Cant:</span>
+                    <input type="number" id="edit_cant_${servicio.IDServicio}" class="edit-servicio-cant" value="${cant}" min="1" style="width:60px; padding:0.2rem; text-align:center; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.2); color:white; border-radius:4px;" ${isChecked ? '' : 'disabled'} onchange="calcularTotalEdicion()">
                 </div>
-            </label>
+            </div>
         `;
         container.appendChild(div);
     });
 }
 
+window.clientUpdateCheckout = () => {
+    const start = document.getElementById('editFechaInicio')?.value;
+    const noches = parseInt(document.getElementById('editNoches')?.value) || 1;
+    if (start) {
+        const date = new Date(start + 'T00:00:00Z');
+        date.setUTCDate(date.getUTCDate() + noches);
+        if (document.getElementById('editFechaFinalizacion')) {
+            document.getElementById('editFechaFinalizacion').value = date.toISOString().split('T')[0];
+        }
+    }
+    calcularTotalEdicion();
+};
+
 function calcularTotalEdicion() {
+    const start = document.getElementById('editFechaInicio')?.value;
+    const end = document.getElementById('editFechaFinalizacion')?.value;
+    let noches = 1;
+    if (start && end) {
+        const t1 = new Date(start + 'T00:00:00Z');
+        const t2 = new Date(end + 'T00:00:00Z');
+        const diff = Math.round((t2 - t1) / (1000 * 60 * 60 * 24));
+        noches = diff > 0 ? diff : 1;
+    }
+    
+    const nochesInput = document.getElementById('editNoches');
+    if (nochesInput && document.activeElement !== nochesInput) {
+        nochesInput.value = noches;
+    }
+
     const habitacionSelect = document.getElementById('editIDHabitacion');
     const paqueteSelect = document.getElementById('editIDPaquete');
     const habitacionCost = parseFloat(habitacionSelect.selectedOptions[0]?.dataset.costo || 0);
     const paquetePrice = parseFloat(paqueteSelect.selectedOptions[0]?.dataset.precio || 0);
+    
+    const basePrice = (paquetePrice || habitacionCost);
+
+    let breakdownHtml = `<div style="display:flex; justify-content:space-between;">
+        <span>Alojamiento (${noches} noche${noches > 1 ? 's' : ''})</span>
+        <span style="font-weight:600; color:#fff;">$${(basePrice * noches).toLocaleString('es-CO')}</span>
+    </div>`;
+
     const serviciosSeleccionados = Array.from(document.querySelectorAll('.edit-servicio-check:checked'));
-    const totalServicios = serviciosSeleccionados.reduce((sum, s) => sum + parseFloat(s.dataset.costo), 0);
-    const subtotal = paquetePrice + habitacionCost + totalServicios;
-    const iva = subtotal * 0.19;
-    const total = subtotal + iva;
+    
+    let totalServicios = 0;
+    serviciosSeleccionados.forEach(chk => {
+        const idServ = chk.value;
+        const cant = Number(document.getElementById(`edit_cant_${idServ}`)?.value || 1);
+        const precio = parseFloat(chk.dataset.costo || 0);
+        const nombre = chk.dataset.nombre || 'Servicio';
+        
+        totalServicios += (precio * cant);
+        
+        breakdownHtml += `<div style="display:flex; justify-content:space-between;">
+            <span>${nombre} (x${cant})</span>
+            <span style="font-weight:600; color:#fff;">$${(precio * cant).toLocaleString('es-CO')}</span>
+        </div>`;
+    });
+
+    const breakdownEl = document.getElementById('editBreakdown');
+    if (breakdownEl) breakdownEl.innerHTML = breakdownHtml;
+
+    const total = (basePrice * noches) + totalServicios;
+    const subtotal = total / 1.19;
+    const iva = total - subtotal;
 
     document.getElementById('editSubtotal').textContent = formatCurrency(subtotal);
     document.getElementById('editIva').textContent = formatCurrency(iva);
     document.getElementById('editTotal').textContent = formatCurrency(total);
+    
+    const diffEl = document.getElementById('editDiffAmount');
+    if (diffEl) {
+        const diff = total - (window.clientOriginalTotal || 0);
+        if (diff > 0) {
+            diffEl.innerHTML = `<span style="color:#f59e0b; font-weight:bold;">⚠️ A pagar adicional: +$${diff.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</span>`;
+        } else if (diff < 0) {
+            diffEl.innerHTML = `<span style="color:#10b981; font-weight:bold;">✅ A reembolsar: -$${Math.abs(diff).toLocaleString('es-CO', { maximumFractionDigits: 0 })}</span>`;
+        } else {
+            diffEl.innerHTML = `<span style="color:rgba(255,255,255,0.6);">Mismo precio original</span>`;
+        }
+    }
 }
 
 async function guardarEdicion() {
     const id = document.getElementById('editIdReserva').value;
-    const servicioIds = Array.from(document.querySelectorAll('.edit-servicio-check:checked')).map(el => parseInt(el.value));
+    const servicioIds = Array.from(document.querySelectorAll('.edit-servicio-check:checked')).map(el => {
+        const idServ = Number(el.value);
+        const cant = Number(document.getElementById(`edit_cant_${idServ}`)?.value || 1);
+        return { IDServicio: idServ, Cantidad: cant };
+    });
     const data = {
         IDHabitacion: parseInt(document.getElementById('editIDHabitacion').value),
         IDPaquete: parseInt(document.getElementById('editIDPaquete').value),

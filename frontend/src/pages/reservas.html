@@ -78,13 +78,19 @@
 
           <div class="nr-grid-3">
             <div class="nr-field">
-              <label for="editFechaInicio">Fecha Inicio</label>
-              <input type="date" id="editFechaInicio" required>
+              <label for="editFechaInicio">Check-In</label>
+              <input type="date" id="editFechaInicio" required onchange="calcularTotalEdicion()">
             </div>
             <div class="nr-field">
-              <label for="editFechaFinalizacion">Fecha Fin</label>
-              <input type="date" id="editFechaFinalizacion" required>
+              <label for="editNoches">Noches</label>
+              <input type="number" id="editNoches" min="1" required onchange="clientUpdateCheckout()" style="text-align:center; font-weight:bold; color:var(--color-acento);">
             </div>
+            <div class="nr-field">
+              <label for="editFechaFinalizacion">Check-Out</label>
+              <input type="date" id="editFechaFinalizacion" required onchange="calcularTotalEdicion()">
+            </div>
+          </div>
+          <div class="nr-grid-1" style="margin-top:0.5rem;">
             <div class="nr-field">
               <label for="editMetodoPago">Pago</label>
               <select id="editMetodoPago" required>
@@ -102,6 +108,9 @@
         <!-- Lado Derecho: Resumen -->
         <div class="nr-resumen" id="editResumen">
           <div class="nr-resumen__titulo">Resumen de Pago</div>
+          <div id="editBreakdown" style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:0.4rem;">
+            <!-- Filled dynamically -->
+          </div>
           <div class="nr-resumen__fila">
             <span>Subtotal</span>
             <span id="editSubtotal">$0</span>
@@ -111,8 +120,11 @@
             <span id="editIva">$0</span>
           </div>
           <div class="nr-resumen__total">
-            <span>Total</span>
+            <span>Nuevo Total Estimado</span>
             <span id="editTotal">$0</span>
+          </div>
+          <div id="editDiffAmount" style="font-size:0.95rem; margin-top:0.5rem; text-align:right;">
+            <span style="color:rgba(255,255,255,0.6);">Mismo precio original</span>
           </div>
         </div>
 
