@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aura Travel — Experiencias Exclusivas en Medellín</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="./src/css/landing.css">
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ── NAVBAR ── -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ngcv" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#7b2ff7"/>
+            <stop offset="100%" stop-color="#00d4ff"/>
+          </linearGradient>
+          <linearGradient id="ngc" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="100%" stop-color="#7b2ff7"/>
+          </linearGradient>
+          <linearGradient id="ngring" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#00d4ff" stop-opacity="0.9"/>
+            <stop offset="50%"  stop-color="#9b59f5" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#7b2ff7" stop-opacity="0.8"/>
+          </linearGradient>
+          <linearGradient id="ngshine" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <circle cx="19" cy="19" r="19" fill="#0d0b2e"/>
+        <circle cx="19" cy="19" r="18.5" fill="none" stroke="url(#ngring)" stroke-width="0.8"/>
+        <circle cx="19" cy="19" r="15.5" fill="none" stroke="url(#ngc)" stroke-width="0.3" opacity="0.3"/>
+        <ellipse cx="19" cy="11" rx="8" ry="4" fill="url(#ngshine)"/>
+        <polygon points="5,31 9.5,31 19,6 16.5,6" fill="url(#ngcv)"/>
+        <polygon points="21.5,6 19,6 28.5,31 33,31" fill="url(#ngcv)"/>
+        <rect x="9.5" y="19.5" width="19" height="4" rx="1" fill="url(#ngc)"/>
+        <polygon points="14,19.5 24,19.5 19,14.5" fill="#0d0b2e"/>
+        <line x1="5.5"  y1="31" x2="18.5" y2="7.5" stroke="#e040fb" stroke-width="0.7" opacity="0.55"/>
+        <line x1="32.5" y1="31" x2="19.5" y2="7.5" stroke="#e040fb" stroke-width="0.7" opacity="0.55"/>
+        <circle cx="19" cy="6" r="1.4" fill="#e040fb"/>
+      </svg>
+      <span class="nav-logo-text">AURA TRAVEL</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#habitaciones">Habitaciones</a></li>
+      <li><a href="#cabanas">Cabañas</a></li>
+      <li><a href="#paquetes">Paquetes</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#experiencias">Experiencias</a></li>
+    </ul>
+    <button class="nav-cta" onclick="window.location.href='src/pages/login.html'">Iniciar Sesión</button>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Medellín · Colombia · 2026</p>
+      <h1 class="hero-title">Aura <em>Travel</em></h1>
+      <p class="hero-subtitle">Experiencias exclusivas donde el lujo se encuentra con la cultura</p>
+      <div class="hero-actions">
+        <button class="btn-hero-primary" onclick="document.getElementById('habitaciones').scrollIntoView({behavior:'smooth'})">Explorar Estancias</button>
+        <button class="btn-hero-secondary" onclick="document.getElementById('nosotros').scrollIntoView({behavior:'smooth'})">Nuestra Historia</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Descubrir</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ── STATS ── -->
+  <div class="stats-bar">
+    <div class="stat-item reveal">
+      <div class="stat-number">12+</div>
+      <div class="stat-label">Años de Excelencia</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+      <div class="stat-number">48</div>
+      <div class="stat-label">Suites de Lujo</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+      <div class="stat-number">98%</div>
+      <div class="stat-label">Satisfacción</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+      <div class="stat-number">5★</div>
+      <div class="stat-label">Categoría Premium</div>
+    </div>
+  </div>
+
+  <!-- ── ABOUT ── -->
+  <section id="nosotros">
+    <div class="about">
+      <div class="about-images reveal">
+        <img class="about-img-main"
+          src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80"
+          alt="Lobby Aura Travel"/>
+        <img class="about-img-accent"
+          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"
+          alt="Piscina"/>
+        <div class="about-badge">
+          <span class="about-badge-num">No.1</span>
+          <span class="about-badge-text">Medellín<br>2026</span>
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-tag reveal">Nuestra Historia</div>
+        <h2 class="section-title reveal reveal-delay-1">
+          Donde cada detalle<br>cuenta una <em>historia</em>
+        </h2>
+        <p class="section-body reveal reveal-delay-2">
+          Aura Travel nació de la visión de crear un refugio donde el lujo no es solo estética, sino una experiencia total. Cada rincón de nuestras instalaciones está diseñado para despertar los sentidos y conectarte con la esencia de Medellín.
+        </p>
+        <div class="about-features">
+          <div class="feature-item reveal reveal-delay-2">
+            <div class="feature-icon"><i class="fa-solid fa-leaf"></i></div>
+            <div>
+              <div class="feature-label">Arquitectura Biofílica</div>
+              <div class="feature-desc">Integración armoniosa con la naturaleza y el entorno montañoso</div>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-3">
+            <div class="feature-icon"><i class="fa-solid fa-wine-glass"></i></div>
+            <div>
+              <div class="feature-label">Gastronomía de Autor</div>
+              <div class="feature-desc">Cocina de fusión con ingredientes locales de temporada</div>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-4">
+            <div class="feature-icon"><i class="fa-solid fa-gem"></i></div>
+            <div>
+              <div class="feature-label">Servicio Personalizado 24/7</div>
+              <div class="feature-desc">Concierge dedicado para cada huésped durante toda su estadía</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HABITACIONES ── -->
+  <section id="habitaciones" class="rooms-section">
+    <div class="rooms-header">
+      <div>
+        <div class="section-tag reveal">Nuestras Estancias</div>
+        <h2 class="section-title reveal reveal-delay-1">Nuestras <em>Habitaciones</em></h2>
+      </div>
+    </div>
+    <div class="rooms-grid reveal" id="grid-habitaciones">
+      <!-- Habitaciones renderizadas dinámicamente -->
+    </div>
+  </section>
+
+  <!-- ── CABAÑAS ── -->
+  <section id="cabanas" class="rooms-section">
+    <div class="rooms-header">
+      <div>
+        <div class="section-tag reveal">Nuestros Refugios</div>
+        <h2 class="section-title reveal reveal-delay-1">Nuestras <em>Cabañas</em></h2>
+      </div>
+    </div>
+    <div class="rooms-grid reveal" id="grid-cabanas">
+      <!-- Cabañas renderizadas dinámicamente -->
+    </div>
+  </section>
+
+  <!-- ── PAQUETES ── -->
+  <section id="paquetes" class="rooms-section">
+    <div class="rooms-header">
+      <div>
+        <div class="section-tag reveal">Experiencias</div>
+        <h2 class="section-title reveal reveal-delay-1">Nuestros <em>Paquetes</em></h2>
+      </div>
+    </div>
+    <div class="rooms-grid reveal" id="grid-paquetes">
+      <!-- Paquetes renderizados dinámicamente -->
+    </div>
+  </section>
+
+  <!-- ── SERVICIOS ── -->
+  <section id="servicios">
+  <div class="services-section">
+    <div class="services-header">
+      <div class="section-tag reveal">Lo que ofrecemos</div>
+      <h2 class="section-title reveal reveal-delay-1">Servicios <em>Premium</em></h2>
+    </div>
+
+    <div class="services-grid" id="grid-servicios">
+      <!-- Servicios renderizados dinámicamente -->
+    </div>
+  </div>
+</section>
+
+  <!-- ── TESTIMONIOS ── -->
+  <section id="experiencias" class="testimonials-section">
+    <div class="testimonials-inner">
+      <div class="section-tag reveal">Testimonios</div>
+      <h2 class="section-title reveal reveal-delay-1">Lo que dicen<br>nuestros <em>huéspedes</em></h2>
+      <div class="testimonials-slider reveal reveal-delay-2">
+        <div class="testimonial active">
+          <p class="testimonial-quote">Aura Travel redefinió mi concepto de lujo. Cada momento fue impecable, desde la bienvenida hasta el último desayuno con vista a las montañas.</p>
+          <div class="testimonial-author">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/100?img=47" alt="María González"/>
+            <div>
+              <div class="testimonial-name">María González</div>
+              <div class="testimonial-origin">Bogotá, Colombia</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <p class="testimonial-quote">La Suite Presidencial superó todas mis expectativas. El servicio personalizado y la atención al detalle hacen de Aura Travel un lugar único en Latinoamérica.</p>
+          <div class="testimonial-author">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/100?img=12" alt="Carlos Restrepo"/>
+            <div>
+              <div class="testimonial-name">Carlos Restrepo</div>
+              <div class="testimonial-origin">Medellín, Colombia</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <p class="testimonial-quote">El spa y el restaurante son simplemente extraordinarios. Volveré sin duda. Una experiencia que conecta perfectamente con la magia de Medellín.</p>
+          <div class="testimonial-author">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/100?img=32" alt="Ana Martínez"/>
+            <div>
+              <div class="testimonial-name">Ana Martínez</div>
+              <div class="testimonial-origin">Ciudad de México</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-dots">
+        <button class="dot active" onclick="goTo(0)"></button>
+        <button class="dot" onclick="goTo(1)"></button>
+        <button class="dot" onclick="goTo(2)"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-glow"></div>
+    <div class="cta-content">
+      <div class="section-tag reveal">Reserve su estadía</div>
+      <h2 class="cta-title reveal reveal-delay-1">Su experiencia<br><em>comienza aquí</em></h2>
+      <p class="cta-sub reveal reveal-delay-2">Descubra por qué somos el destino preferido de viajeros que buscan lo extraordinario en el corazón de Medellín.</p>
+      <div class="cta-actions reveal reveal-delay-3">
+        <button class="btn-hero-primary"    onclick="window.location.href='src/pages/login.html'">Reservar Ahora</button>
+        <button class="btn-hero-secondary"  onclick="window.location.href='src/pages/login.html'">Explorar Catálogo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <svg viewBox="0 0 38 38" fill="none" width="32" height="32">
+            <defs>
+              <linearGradient id="fgcv" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#7b2ff7"/>
+                <stop offset="100%" stop-color="#00d4ff"/>
+              </linearGradient>
+              <linearGradient id="fgc" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#7b2ff7"/>
+              </linearGradient>
+            </defs>
+            <circle cx="19" cy="19" r="19" fill="#0d0b2e"/>
+            <circle cx="19" cy="19" r="18.5" fill="none" stroke="url(#fgc)" stroke-width="0.8" opacity="0.6"/>
+            <polygon points="5,31 9.5,31 19,6 16.5,6" fill="url(#fgcv)"/>
+            <polygon points="21.5,6 19,6 28.5,31 33,31" fill="url(#fgcv)"/>
+            <rect x="9.5" y="19.5" width="19" height="4" rx="1" fill="url(#fgc)"/>
+            <polygon points="14,19.5 24,19.5 19,14.5" fill="#0d0b2e"/>
+            <circle cx="19" cy="6" r="1.4" fill="#e040fb"/>
+          </svg>
+          <span class="nav-logo-text">AURA TRAVEL</span>
+        </div>
+        <p>Experiencias exclusivas de hospitalidad en el corazón de Medellín, donde el lujo se convierte en recuerdo.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Experiencias</h4>
+        <ul>
+          <li><a href="#">Habitaciones</a></li>
+          <li><a href="#">Suites</a></li>
+          <li><a href="#">Paquetes</a></li>
+          <li><a href="#">Eventos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Servicios</h4>
+        <ul>
+          <li><a href="#">Restaurante</a></li>
+          <li><a href="#">Spa</a></li>
+          <li><a href="#">Piscina</a></li>
+          <li><a href="#">Fitness</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="#">Medellín, Antioquia</a></li>
+          <li><a href="#">info@auratravel.co</a></li>
+          <li><a href="#">+57 604 000 0000</a></li>
+          <li><a href="src/pages/login.html">Iniciar Sesión</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Aura Travel — Todos los derechos reservados</p>
+      <div class="footer-socials">
+        <div class="social-btn">in</div>
+        <div class="social-btn">ig</div>
+        <div class="social-btn">fb</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Cursor personalizado
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.transform = `translate(${e.clientX - 5}px,  ${e.clientY - 5}px)`;
+      ring.style.transform   = `translate(${e.clientX - 18}px, ${e.clientY - 18}px)`;
+    });
+
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Testimonials slider
+    let current = 0;
+    const testimonials = document.querySelectorAll('.testimonial');
+    const dots = document.querySelectorAll('.dot');
+    function goTo(n) {
+      testimonials[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = n;
+      testimonials[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+    setInterval(() => goTo((current + 1) % testimonials.length), 5000);
+  </script>
+  
+  <!-- MODAL PREMIUM HTML -->
+  <div class="landing-modal-overlay" id="landingModalOverlay" onclick="cerrarModalDetalle(event)">
+    <div class="landing-modal" id="landingModal">
+      <button class="landing-modal-close" onclick="cerrarModalDetalle(event, true)">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="landing-modal-hero">
+        <img class="landing-modal-img" id="lm-img" src="" alt="Imagen de detalle">
+      </div>
+      <div class="landing-modal-body">
+        <span class="landing-modal-tag" id="lm-tag">Etiqueta</span>
+        <h2 class="landing-modal-title" id="lm-title">Título del Elemento</h2>
+        <div class="landing-modal-price">
+          Desde <span id="lm-price">$0</span> <span id="lm-price-suffix" style="font-size:1rem;"></span>
+        </div>
+        <p class="landing-modal-desc" id="lm-desc">Descripción detallada del elemento.</p>
+        <div class="landing-modal-features" id="lm-features">
+          <!-- Características inyectadas con JS -->
+        </div>
+        <div class="landing-modal-actions">
+          <button class="btn-hero-primary" onclick="window.location.href='src/pages/login.html'">Reservar Ahora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="src/js/landing.js?v=20260618"></script>
+</body>
+</html>
+
+
