@@ -7,23 +7,51 @@
   <link rel="stylesheet" href="../css/reset.css" />
   <link rel="stylesheet" href="../css/variables.css" />
   <link rel="stylesheet" href="../css/styles.css?v=1.1" />
-  <link rel="stylesheet" href="../css/nueva-reserva.css?v=2.0" />
+  <link rel="stylesheet" href="../css/nueva-reserva.css?v=3.5" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="../css/calendar-customization.css" />
+  <link rel="stylesheet" href="../css/calendar-customization.css?v=2.0" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     if (!localStorage.getItem('user')) {
       window.location.href = '/src/pages/login.html';
     }
   </script>
+  <style>
+    /* Fondo con gradiente para Nueva Reserva — Cliente */
+    body.main-content--premium {
+      background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%) !important;
+    }
+
+    .main-content {
+      background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%) !important;
+    }
+
+    .nr-wrapper {
+      background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%) !important;
+    }
+  </style>
 </head>
-<body class="main-content--premium">
+<body>
 
-  <div id="header-container"></div>
-  <button class="sidebar__toggle" id="sidebarToggle" aria-label="Abrir menú">☰</button>
-  <div class="sidebar__overlay" id="sidebarOverlay"></div>
+  <!-- Topbar con breadcrumb para cliente -->
+  <div class="anr-topbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem 2rem 0.5rem; border-bottom: 1px solid rgba(49,130,206,0.12); background: rgba(235,244,251,0.85); backdrop-filter: blur(10px);">
+    <a href="/src/pages/reservas.html" class="anr-topbar__back" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 1rem; border-radius: 8px; border: 1px solid rgba(49,130,206,0.2); background: rgba(49,130,206,0.07); color: #1A2B4A; font-size: 0.82rem; font-family: var(--fuente-secundaria, 'Inter', sans-serif); cursor: pointer; transition: all 0.2s; text-decoration: none;">
+      <i data-lucide="arrow-left" style="width:14px;height:14px;"></i>
+      Volver a Mis Reservas
+    </a>
+    <div class="anr-topbar__breadcrumb" style="color: rgba(26,43,74,0.45); font-size: 0.8rem; font-family: var(--fuente-secundaria, 'Inter', sans-serif); display: flex; align-items: center; gap: 0.4rem;">
+      <i data-lucide="calendar-check" style="width:12px;height:12px;"></i>
+      Mis Reservas
+      <i data-lucide="chevron-right" style="width:12px;height:12px;opacity:0.4;"></i>
+      <span style="color: rgba(26,43,74,0.75);">Nueva Reserva</span>
+    </div>
+  </div>
 
-  <main class="main-content" id="mainContent">
+  <!-- Fondo decorativo -->
+  <div class="anr-bg" style="position: fixed; inset: 0; top: 60px; background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%) !important; z-index: 0; pointer-events: none;"></div>
+
+  <!-- Contenido principal -->
+  <main style="position: relative; z-index: 2; margin-top: 60px;">
     <div class="nr-wrapper">
 
       <!-- Encabezado de página -->
@@ -38,7 +66,23 @@
         <!-- COLUMNA IZQUIERDA: formulario -->
         <form id="reservationForm" class="nr-form">
 
-          <!-- PASO 1: FECHAS DE ESTADÍA (PRIMERO) -->
+          <!-- PASO 0: DATOS DE LA RESERVA -->
+          <div class="nr-card nr-card--step0">
+            <div class="nr-card__titulo">Datos de la Reserva</div>
+            <div class="nr-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="nr-field">
+                <label class="nr-label" for="ClienteNombre">👤 Cliente</label>
+                <input type="text" id="ClienteNombre" disabled value="Tu Perfil" style="background: rgba(49,130,206,0.08); cursor: not-allowed;">
+              </div>
+              <div class="nr-field">
+                <label class="nr-label" for="NumeroPersonas">👥 Cantidad de Personas</label>
+                <input type="number" id="NumeroPersonas" min="1" value="1" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid rgba(49,130,206,0.3); border-radius: 8px; font-family: var(--fuente-secundaria); font-size: 0.95rem;">
+                <small id="personas-limite-msg" style="display:none; color:#f59e0b; font-size:0.78rem; margin-top:0.25rem;"></small>
+              </div>
+            </div>
+          </div>
+
+          <!-- PASO 1: FECHAS DE ESTADÍA -->
           <div class="nr-card nr-card--step1">
             <div class="nr-card__titulo">Selecciona tus Fechas</div>
 
@@ -48,10 +92,14 @@
               <span class="nr-noches-badge__label">noche(s)</span>
             </div>
 
-            <div class="nr-fechas-grid">
+            <div class="nr-fechas-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; align-items: flex-end;">
               <div class="nr-field">
                 <label class="nr-label" for="FechaInicio">📅 Entrada</label>
                 <input type="date" id="FechaInicio" required>
+              </div>
+              <div class="nr-field">
+                <label class="nr-label" for="Noches">🌙 Noches</label>
+                <input type="number" id="Noches" min="1" value="1" required style="text-align:center; font-weight:bold; color:var(--color-acento);">
               </div>
               <div class="nr-field">
                 <label class="nr-label" for="FechaFinalizacion">📅 Salida</label>
@@ -75,6 +123,7 @@
                 <select id="IDHabitacion">
                   <option value="">Seleccione una habitación</option>
                 </select>
+                <small id="habitacion-capacidad-msg" style="display:none; color:#ef4444; font-size:0.78rem; margin-top:0.3rem; font-weight:600;"></small>
                 <div id="detalleHabitacion" class="nr-detalle" style="display:none;"></div>
               </div>
               <div class="nr-field">
@@ -82,13 +131,15 @@
                 <select id="IDCabana">
                   <option value="">Seleccione una cabaña</option>
                 </select>
+                <small id="cabana-capacidad-msg" style="display:none; color:#ef4444; font-size:0.78rem; margin-top:0.3rem; font-weight:600;"></small>
                 <div id="detalleCabana" class="nr-detalle" style="display:none;"></div>
               </div>
               <div class="nr-field">
                 <label class="nr-label" for="IDPaquete">📦 Paquete</label>
-                <select id="IDPaquete">
-                  <option value="">Seleccione un paquete</option>
-                </select>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                  <select id="IDPaquete" style="flex:1;"></select>
+                  <button type="button" id="btnVerDetallesPaquete" onclick="abrirModalPaquete()" style="display:none; white-space:nowrap; padding:0.5rem 0.85rem; background:rgba(49,130,206,0.15); border:1px solid rgba(49,130,206,0.4); border-radius:8px; color:#3182ce; font-size:0.8rem; cursor:pointer; font-weight:600;">🔍 Ver detalles</button>
+                </div>
                 <div id="detallePaquete" class="nr-detalle" style="display:none;"></div>
               </div>
             </div>
@@ -201,12 +252,238 @@
 
       </div>
     </div>
-    <div id="footer-container"></div>
   </main>
+
+  <!-- Notificaciones -->
+  <div id="notificationContainer" class="notification-container"></div>
+
+  <!-- Modal detalles paquete -->
+  <div id="modalPaquete" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:2rem; max-width:520px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:85vh; overflow-y:auto;">
+      <button onclick="cerrarModalPaquete()" style="position:absolute; top:1rem; right:1rem; background:rgba(0,0,0,0.08); border:none; border-radius:50%; width:32px; height:32px; font-size:1.1rem; cursor:pointer; line-height:32px; text-align:center;">×</button>
+      <div id="modalPaqueteContent">Cargando...</div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="../js/api.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/nueva-reserva.js?v=20260525-03"></script>
+  <script src="../js/nueva-reserva.js?v=20260525-05"></script>
+  <script>
+    // Cargar nombre del cliente desde localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const clienteNombreEl = document.getElementById('ClienteNombre');
+      if (clienteNombreEl && user.NombreUsuario) {
+        clienteNombreEl.value = user.NombreUsuario;
+      }
+
+      // Validar capacidad cuando cambia cantidad de personas
+      const numPersonasInput = document.getElementById('NumeroPersonas');
+      const habitacionSelect = document.getElementById('IDHabitacion');
+      const cabanaSelect = document.getElementById('IDCabana');
+
+      numPersonasInput?.addEventListener('change', () => {
+        validarCapacidadAlojamientos();
+      });
+
+      habitacionSelect?.addEventListener('change', () => {
+        validarSeleccionHabitacion();
+      });
+
+      cabanaSelect?.addEventListener('change', () => {
+        validarSeleccionCabana();
+      });
+    });
+
+    function validarCapacidadAlojamientos() {
+      const numPersonas = parseInt(document.getElementById('NumeroPersonas').value) || 1;
+      const habitacionSelect = document.getElementById('IDHabitacion');
+      const cabanaSelect = document.getElementById('IDCabana');
+      const habitacionMsgEl = document.getElementById('habitacion-capacidad-msg');
+      const cabanaMsgEl = document.getElementById('cabana-capacidad-msg');
+
+      // Verificar si hay habitaciones sin capacidad suficiente
+      const habitacionesSinCapacidad = window.habitacionesData?.filter(h => 
+        h.Estado === 1 && numPersonas > (h.CapacidadPersonas || 0)
+      ) || [];
+
+      // Mostrar mensaje si hay habitaciones seleccionadas sin capacidad
+      if (habitacionSelect.value) {
+        const h = window.habitacionesData?.find(x => String(x.IDHabitacion) === String(habitacionSelect.value));
+        if (h && numPersonas > (h.CapacidadPersonas || 0)) {
+          habitacionMsgEl.textContent = `❌ Capacidad insuficiente. La habitación soporta máximo ${h.CapacidadPersonas} persona(s), pero seleccionaste ${numPersonas}.`;
+          habitacionMsgEl.style.display = 'block';
+          habitacionSelect.value = '';
+        } else {
+          habitacionMsgEl.style.display = 'none';
+        }
+      } else {
+        habitacionMsgEl.style.display = 'none';
+      }
+
+      // Verificar si hay cabañas sin capacidad suficiente
+      const cabanasSinCapacidad = window.cabanasData?.filter(c => 
+        c.Estado === 1 && numPersonas > (c.CapacidadPersonas || 0)
+      ) || [];
+
+      // Mostrar mensaje si hay cabañas seleccionadas sin capacidad
+      if (cabanaSelect.value) {
+        const c = window.cabanasData?.find(x => String(x.IDCabana) === String(cabanaSelect.value));
+        if (c && numPersonas > (c.CapacidadPersonas || 0)) {
+          cabanaMsgEl.textContent = `❌ Capacidad insuficiente. La cabaña soporta máximo ${c.CapacidadPersonas} persona(s), pero seleccionaste ${numPersonas}.`;
+          cabanaMsgEl.style.display = 'block';
+          cabanaSelect.value = '';
+        } else {
+          cabanaMsgEl.style.display = 'none';
+        }
+      } else {
+        cabanaMsgEl.style.display = 'none';
+      }
+    }
+
+    function validarSeleccionHabitacion() {
+      const numPersonas = parseInt(document.getElementById('NumeroPersonas').value) || 1;
+      const habitacionSelect = document.getElementById('IDHabitacion');
+      const habitacionMsgEl = document.getElementById('habitacion-capacidad-msg');
+      const habitacion = window.habitacionesData?.find(h => String(h.IDHabitacion) === String(habitacionSelect.value));
+
+      if (habitacion && numPersonas > (habitacion.CapacidadPersonas || 0)) {
+        habitacionMsgEl.textContent = `❌ Capacidad insuficiente. La habitación soporta máximo ${habitacion.CapacidadPersonas} persona(s), pero seleccionaste ${numPersonas}.`;
+        habitacionMsgEl.style.display = 'block';
+        habitacionSelect.value = '';
+      } else {
+        habitacionMsgEl.style.display = 'none';
+      }
+    }
+
+    function validarSeleccionCabana() {
+      const numPersonas = parseInt(document.getElementById('NumeroPersonas').value) || 1;
+      const cabanaSelect = document.getElementById('IDCabana');
+      const cabanaMsgEl = document.getElementById('cabana-capacidad-msg');
+      const cabana = window.cabanasData?.find(c => String(c.IDCabana) === String(cabanaSelect.value));
+
+      if (cabana && numPersonas > (cabana.CapacidadPersonas || 0)) {
+        cabanaMsgEl.textContent = `❌ Capacidad insuficiente. La cabaña soporta máximo ${cabana.CapacidadPersonas} persona(s), pero seleccionaste ${numPersonas}.`;
+        cabanaMsgEl.style.display = 'block';
+        cabanaSelect.value = '';
+      } else {
+        cabanaMsgEl.style.display = 'none';
+      }
+    }
+
+    function abrirModalPaquete() {
+      const modal = document.getElementById('modalPaquete');
+      const paqueteId = document.getElementById('IDPaquete').value;
+      if (!paqueteId) return alert('Selecciona un paquete primero');
+      
+      fetch(`/api/paquetes/${paqueteId}`)
+        .then(r => r.json())
+        .then(paquete => {
+          document.getElementById('modalPaqueteContent').innerHTML = `
+            <h2 style="margin-bottom:1rem; color:#1A2B4A;">${paquete.NombrePaquete}</h2>
+            <p>${paquete.Descripcion}</p>
+            <div style="margin-top:1rem; padding:1rem; background:#f0f4ff; border-radius:8px;">
+              <p><strong>Precio:</strong> $${paquete.PrecioPaquete}</p>
+              <p><strong>Incluye:</strong> ${paquete.servicios?.map(s => s.NombreServicio).join(', ') || 'Consultar'}</p>
+            </div>
+          `;
+          modal.style.display = 'flex';
+        })
+        .catch(() => alert('Error al cargar detalles'));
+    }
+    
+    function cerrarModalPaquete() {
+      document.getElementById('modalPaquete').style.display = 'none';
+    }
+    
+    document.getElementById('modalPaquete')?.addEventListener('click', (e) => {
+      if (e.target.id === 'modalPaquete') cerrarModalPaquete();
+    });
+
+    // Modal de Reserva Exitosa
+    function mostrarModalExito() {
+      const modal = document.getElementById('modalExito');
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.style.animation = 'fadeIn 0.4s ease-out';
+        document.getElementById('contenidoExito').style.animation = 'slideUp 0.5s ease-out';
+      }
+    }
+
+    function cerrarModalExito() {
+      const modal = document.getElementById('modalExito');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+      window.location.href = '/src/pages/reservas.html';
+    }
+
+    document.getElementById('modalExito')?.addEventListener('click', (e) => {
+      if (e.target.id === 'modalExito') cerrarModalExito();
+    });
+    
+    lucide.createIcons();
+  </script>
+
+  <!-- Modal de Reserva Exitosa -->
+  <div id="modalExito" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000;">
+    <div id="contenidoExito" style="background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); padding: 2.5rem; max-width: 450px; text-align: center; position: relative;">
+      <!-- Checkmark animado -->
+      <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #059669 0%, #34D399 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: scaleIn 0.5s ease-out;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <!-- Título -->
+      <h2 style="color: #1A2B4A; font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem; font-family: var(--fuente-primaria, 'Poppins', sans-serif);">¡Reserva Confirmada!</h2>
+
+      <!-- Subtítulo -->
+      <p style="color: rgba(26, 43, 74, 0.7); font-size: 1rem; margin-bottom: 1.5rem; line-height: 1.5; font-family: var(--fuente-secundaria, 'Inter', sans-serif);">Tu reserva ha sido creada exitosamente. Recibirás una confirmación en tu correo electrónico.</p>
+
+      <!-- Detalles -->
+      <div style="background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.75rem; text-align: left;">
+        <p style="color: rgba(26, 43, 74, 0.6); font-size: 0.85rem; margin-bottom: 0.5rem; font-family: var(--fuente-secundaria, 'Inter', sans-serif);">Número de reserva:</p>
+        <p style="color: #2B6CB0; font-size: 1.1rem; font-weight: 600; font-family: var(--fuente-secundaria, 'Inter', sans-serif);" id="numeroReserva">#12345678</p>
+      </div>
+
+      <!-- Botones -->
+      <div style="display: flex; gap: 1rem;">
+        <button onclick="cerrarModalExito()" style="flex: 1; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #059669 0%, #34D399 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: var(--fuente-secundaria, 'Inter', sans-serif);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(5, 150, 105, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          Ver Mis Reservas
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estilos para animaciones -->
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
 </body>
 </html>

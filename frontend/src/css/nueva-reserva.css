@@ -8,7 +8,22 @@
 
 /* Fondo con gradiente estético para Nueva Reserva */
 body.main-content--premium {
-  background: linear-gradient(135deg, #EBF4FB 0%, #E8F1F8 50%, #F0E8FF 100%) !important;
+  background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 50%, #f0f4ff 100%) !important;
+}
+
+/* Topbar estilos */
+.anr-topbar {
+  box-shadow: 0 2px 8px rgba(26, 43, 74, 0.08);
+}
+
+.anr-topbar__back {
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.anr-topbar__back:hover {
+  background: rgba(49,130,206,0.12) !important;
+  border-color: rgba(49,130,206,0.35) !important;
 }
 
 /* -----------------------------------------------
@@ -721,7 +736,7 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
 }
 
 /* -----------------------------------------------
-   RESUMEN DE PAGO — tarjeta sticky
+   RESUMEN DE PAGO — tarjeta sticky mejorada
    ----------------------------------------------- */
 .nr-resumen {
   position: sticky;
@@ -734,6 +749,13 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
   box-shadow: 0 8px 40px rgba(26,43,74,0.25), 0 0 0 1px rgba(255,255,255,0.05) inset;
   z-index: 10;
   color: #fff;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Efecto de sombra aumentada cuando se desliza */
+.nr-resumen.scrolling {
+  box-shadow: 0 16px 60px rgba(26,43,74,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 30px rgba(124,58,237,0.2);
+  transform: translateY(0px);
 }
 
 .nr-resumen__titulo {
@@ -753,6 +775,26 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
   flex-direction: column;
   gap: 0.55rem;
   margin-bottom: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.nr-resumen__desglose::-webkit-scrollbar {
+  width: 5px;
+}
+
+.nr-resumen__desglose::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+
+.nr-resumen__desglose::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
+
+.nr-resumen__desglose::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
 }
 
 .nr-resumen__item {
@@ -761,8 +803,13 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.8rem;
-  animation: nrFadeUp 0.2s ease forwards;
+  animation: nrFadeUp 0.3s ease forwards;
   margin-bottom: 0.3rem;
+  transition: all 0.2s ease;
+}
+
+.nr-resumen__item.new-item {
+  animation: nrPulse 0.6s ease;
 }
 
 .nr-resumen__item.accommodation-item {
@@ -799,6 +846,11 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.nr-resumen__item.new-item .nr-resumen__item-val {
+  animation: nrValuePulse 0.6s ease;
 }
 
 .nr-resumen__item.accommodation-item .nr-resumen__item-val {
@@ -825,6 +877,7 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
 .nr-resumen__fila span:last-child {
   font-weight: 700;
   color: rgba(255,255,255,0.85);
+  transition: all 0.3s ease;
 }
 
 .nr-resumen__total {
@@ -844,6 +897,11 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
   font-size: 1.45rem;
   font-weight: 900;
   letter-spacing: -0.5px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nr-resumen__total.updated span:last-child {
+  animation: nrTotalPulse 0.6s ease;
 }
 
 .nr-resumen__helper {
@@ -857,6 +915,50 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
   text-align: center;
   font-weight: 500;
   letter-spacing: 0.1px;
+}
+
+/* Animaciones */
+@keyframes nrPulse {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  50% {
+    background: rgba(124, 58, 237, 0.15);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nrValuePulse {
+  0% {
+    color: #FBBF24;
+    transform: scale(1.2);
+  }
+  50% {
+    color: #FCD34D;
+  }
+  100% {
+    color: #fff;
+    transform: scale(1);
+  }
+}
+
+@keyframes nrTotalPulse {
+  0% {
+    color: #FBBF24;
+    transform: scale(1);
+  }
+  50% {
+    color: #FCD34D;
+    transform: scale(1.15);
+  }
+  100% {
+    color: #FBBF24;
+    transform: scale(1);
+  }
 }
 
 /* Detalles de fechas en resumen */

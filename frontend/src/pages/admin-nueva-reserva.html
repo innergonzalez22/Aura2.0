@@ -267,10 +267,14 @@
                   <span class="nr-noches-badge__label">noche(s)</span>
                 </div>
 
-                <div class="nr-fechas-grid">
+                <div class="nr-fechas-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; align-items: flex-end;">
                   <div class="nr-field">
                     <label class="nr-label" for="FechaInicio">📅 Entrada</label>
                     <input type="date" id="FechaInicio" required>
+                  </div>
+                  <div class="nr-field">
+                    <label class="nr-label" for="Noches">🌙 Noches</label>
+                    <input type="number" id="Noches" min="1" value="1" required style="text-align:center; font-weight:bold; color:var(--color-acento);">
                   </div>
                   <div class="nr-field">
                     <label class="nr-label" for="FechaFinalizacion">📅 Salida</label>
@@ -335,6 +339,38 @@
                     <option value="">Seleccione un método</option>
                   </select>
                 </div>
+              </div>
+
+              <!-- Términos y condiciones -->
+              <div class="nr-card nr-tc-card">
+                <div class="nr-card__titulo">📋 Política de Cancelación y Términos</div>
+                <div class="nr-tc-politica">
+                  <div class="nr-tc-row nr-tc-free">
+                    <span class="nr-tc-icon">✅</span>
+                    <div class="nr-tc-row-body">
+                      <strong>Cancelación gratuita</strong>
+                      <p>Si cancelas con <strong>7 días o más</strong> de anticipación a la fecha de llegada, recibes un reembolso completo del <strong>100 %</strong>.</p>
+                    </div>
+                  </div>
+                  <div class="nr-tc-row nr-tc-penalty">
+                    <span class="nr-tc-icon">⚠️</span>
+                    <div class="nr-tc-row-body">
+                      <strong>Cancelación tardía — cargo del 40 %</strong>
+                      <p>Si cancelas con <strong>menos de 7 días</strong> de anticipación, se retiene el <strong>40 %</strong> del total como cargo de cancelación. El 60 % restante es reembolsado.</p>
+                    </div>
+                  </div>
+                </div>
+                <ul class="nr-tc-small">
+                  <li>Check-in desde las <strong>3:00 PM</strong> · Check-out hasta las <strong>12:00 PM</strong>.</li>
+                  <li>La reserva se confirma únicamente una vez verificado el comprobante de pago.</li>
+                  <li>Los precios mostrados incluyen IVA del 19 %.</li>
+                  <li>Aura Travel no se hace responsable por objetos olvidados ni por daños causados por el huésped.</li>
+                  <li>Las reservas están sujetas a disponibilidad hasta confirmar el pago.</li>
+                </ul>
+                <label class="nr-tc-check-label">
+                  <input type="checkbox" id="aceptaTerminos" class="nr-tc-checkbox">
+                  <span class="nr-tc-check-text">He leído y acepto los <strong>Términos y Condiciones</strong> y la política de cancelación de Aura Travel.</span>
+                </label>
               </div>
 
               <!-- Acciones -->

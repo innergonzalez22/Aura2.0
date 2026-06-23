@@ -342,6 +342,7 @@ async function cargarHabitaciones() {
     try {
         const response = await fetch('/api/habitaciones');
         habitacionesData = await response.json();
+        window.habitacionesData = habitacionesData;
         const select = document.getElementById('IDHabitacion');
         select.innerHTML = '<option value="">Seleccione una habitación</option>';
         habitacionesData.forEach(h => {
@@ -361,6 +362,7 @@ async function cargarCabanas() {
     try {
         const response = await fetch('/api/cabanas');
         cabanasData = await response.json();
+        window.cabanasData = cabanasData;
         const select = document.getElementById('IDCabana');
         cabanasData.forEach(c => {
             if (c.Estado === 1) {
@@ -1185,11 +1187,16 @@ document.getElementById('reservationForm').addEventListener('submit', async (e) 
             body: JSON.stringify(data)
         });
         if (response.ok) {
-            alert('Reserva creada exitosamente');
+            // Mostrar modal de éxito personalizado
+            const responseData = await response.json();
+            const numeroReserva = responseData.IDReserva || '#' + Date.now().toString().slice(-8);
+            document.getElementById('numeroReserva').textContent = `#${numeroReserva}`;
+            mostrarModalExito();
+            
             if (isAdminEmbed && window.parent && window.parent !== window) {
-                window.parent.postMessage({ type: 'nuevaReservaSuccess' }, window.location.origin);
-            } else {
-                window.location.href = '/src/pages/reservas.html';
+                setTimeout(() => {
+                    window.parent.postMessage({ type: 'nuevaReservaSuccess' }, window.location.origin);
+                }, 2000);
             }
         } else {
             const error = await response.json();
